@@ -1,0 +1,956 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+<title>Frases da Aula 1</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: tabs and group chips on top, one sentence card (Portuguese prompt, hidden English, mic, test-runner result), list and class summary below. */
+:root {
+  --bg: #EEF2F5;
+  --surface: #FFFFFF;
+  --ink: #13202A;
+  --muted: #566874;
+  --line: #D3DCE3;
+  --accent: #0E6A8C;
+  --accent-ink: #FFFFFF;
+  --pass: #17794A;
+  --pass-bg: #E2F3EA;
+  --fail: #B1352A;
+  --fail-bg: #FBE7E4;
+  --rec: #B1352A;
+  --f-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1418;
+    --surface: #152028;
+    --ink: #E6EEF2;
+    --muted: #8FA2AE;
+    --line: #26363F;
+    --accent: #5CC0E0;
+    --accent-ink: #06222C;
+    --pass: #5BD39A;
+    --pass-bg: #123326;
+    --fail: #FF8F80;
+    --fail-bg: #3A1B18;
+    --rec: #D9493B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1418;
+  --surface: #152028;
+  --ink: #E6EEF2;
+  --muted: #8FA2AE;
+  --line: #26363F;
+  --accent: #5CC0E0;
+  --accent-ink: #06222C;
+  --pass: #5BD39A;
+  --pass-bg: #123326;
+  --fail: #FF8F80;
+  --fail-bg: #3A1B18;
+  --rec: #D9493B;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 24px 56px;
+  padding-inline: 16px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: grid; gap: 20px; }
+.wrap > * { min-width: 0; }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 8px 16px; }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: 1.7rem; line-height: 1.1; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 60ch; }
+.prog { font-family: var(--f-mono); font-size: 0.82rem; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  font: inherit; font-size: 0.88rem; padding: 6px 13px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.chips.small .chip { font-size: 0.8rem; padding: 4px 10px; }
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: grid; gap: 16px; }
+.card > * { min-width: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+.tagpill { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; background: var(--bg); color: var(--ink); }
+.st { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: inline-block; flex: none; }
+.st-ok .dot { background: var(--pass); }
+.st-err .dot { background: var(--fail); }
+.st-mid .dot { background: var(--accent); }
+.lab { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.prompt { font-family: var(--f-display); font-weight: 800; font-size: clamp(1.55rem, 5.6vw, 2.25rem); line-height: 1.15; letter-spacing: -0.01em; margin: 4px 0 0; overflow-wrap: anywhere; text-wrap: balance; }
+.target { display: grid; gap: 4px; padding: 14px 16px; background: var(--bg); border-radius: 10px; }
+.target .tt { font-family: var(--f-display); font-weight: 600; font-size: 1.3rem; line-height: 1.3; overflow-wrap: anywhere; }
+.target .pron { display: grid; gap: 2px; padding: 10px 12px; background: var(--bg); border-radius: 10px; }
+.target .pron .pv { font-family: var(--f-mono); font-weight: 600; font-size: 1.05rem; line-height: 1.5; letter-spacing: 0.01em; overflow-wrap: anywhere; }
+.target .blk { font-family: var(--f-mono); font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere; }
+.hid { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; padding: 14px 16px; border: 1px dashed var(--line); border-radius: 10px; color: var(--muted); }
+.note { color: var(--muted); font-size: 0.93rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn {
+  font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;
+  display: inline-flex; gap: 8px; align-items: center;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.rec { background: var(--rec); border-color: var(--rec); color: #fff; }
+.btn.small { padding: 6px 12px; font-size: 0.88rem; font-weight: 500; }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.micnote { color: var(--muted); font-size: 0.9rem; min-height: 1.4em; }
+.micnote.bad { color: var(--fail); }
+.field { display: grid; gap: 6px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+input[type="text"] {
+  font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); flex: 1 1 200px; min-width: 0;
+}
+.help { color: var(--muted); font-size: 0.85rem; }
+.help code { font-family: var(--f-mono); font-size: 0.82rem; }
+
+.res { border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; font-family: var(--f-mono); font-size: 0.95rem; border: 1px solid; }
+.res.pass { background: var(--pass-bg); border-color: var(--pass); }
+.res.fail { background: var(--fail-bg); border-color: var(--fail); }
+.verdict { font-weight: 600; letter-spacing: 0.08em; }
+.verdict small { font-weight: 400; letter-spacing: 0; color: var(--muted); margin-left: 8px; }
+.res.pass .verdict { color: var(--pass); }
+.res.fail .verdict { color: var(--fail); }
+.line { display: grid; grid-template-columns: 5.5rem 1fr; gap: 8px; align-items: baseline; }
+.line .k { color: var(--muted); }
+.line .v { overflow-wrap: anywhere; }
+.m { color: var(--fail); text-decoration: underline wavy; text-underline-offset: 3px; }
+.hints { margin: 0; padding-left: 1.1rem; font-family: var(--f-body); font-size: 0.95rem; display: grid; gap: 4px; }
+.why { font-family: var(--f-body); font-size: 0.93rem; margin: 0; color: var(--ink); }
+.why b { font-weight: 600; }
+.nav { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.nav .pos { font-family: var(--f-mono); font-size: 0.85rem; color: var(--muted); }
+
+h2.sec { font-family: var(--f-display); font-size: 1.15rem; font-weight: 800; margin: 0 0 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
+.cell {
+  font: inherit; font-size: 0.92rem; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); cursor: pointer; display: flex; align-items: flex-start; gap: 9px; min-width: 0;
+}
+.cell .dot { margin-top: 7px; }
+.cell span.t { overflow-wrap: anywhere; }
+.cell[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; gap: 12px; }
+.empty { color: var(--muted); }
+textarea { width: 100%; min-height: 12em; padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-family: var(--f-mono); font-size: 0.85rem; }
+.foot { color: var(--muted); font-size: 0.85rem; }
+@media (max-width: 480px) { .card { padding: 18px; } .line { grid-template-columns: 4.6rem 1fr; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>Frases da Aula 1</h1>
+      <p class="sub">Aula de 24/09/2026 · passado com did e didn't, irregulares e dois verbos na mesma frase. Leia a frase em português, diga em inglês e confira.</p>
+    </div>
+    <div class="prog" id="prog" aria-live="polite"></div>
+  </header>
+
+  <div class="chips" id="tabs" role="group" aria-label="Tipo de card"></div>
+  <div class="chips small" id="groups" role="group" aria-label="Grupo de frases"></div>
+
+  <section class="card" aria-label="Card de frase">
+    <div class="meta">
+      <span class="tagpill" id="ctag"></span>
+      <span class="st" id="cstatus"><span class="dot"></span><span id="cstatust"></span></span>
+    </div>
+    <div>
+      <div class="lab" id="plab"></div>
+      <p class="prompt" id="cprompt"></p>
+    </div>
+    <div id="ctarget"></div>
+    <div class="note" id="cnote"></div>
+
+    <div class="actions">
+      <button type="button" class="btn" id="bListen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+        <span id="bListenT">Ouvir</span>
+      </button>
+      <button type="button" class="btn" id="bListenAns" hidden>Ouvir resposta</button>
+      <button type="button" class="btn primary" id="bMic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        <span id="bMicT">Ligar microfone</span>
+      </button>
+    </div>
+    <div class="chips small">
+      <button type="button" class="chip" id="bHide" aria-pressed="false">Esconder o inglês</button>
+      <button type="button" class="chip" id="bSlow" aria-pressed="false">Devagar</button>
+      <button type="button" class="chip" id="bAuto" aria-pressed="false">Avançar ao acertar</button>
+    </div>
+    <div class="micnote" id="micnote" aria-live="polite"></div>
+    <div class="help" id="fileTip" hidden>Dica: o Chrome pede permissão toda vez que o arquivo é aberto direto do disco. Para a permissão ficar salva, abra por localhost: na pasta do arquivo rode <code>python -m http.server 8000</code> e acesse <code>http://localhost:8000/aula-03-frases.html</code>.</div>
+
+    <form class="field" id="checkForm" autocomplete="off">
+      <label class="lab" for="heard">Texto ouvido</label>
+      <div class="row">
+        <input type="text" id="heard" placeholder="O microfone preenche aqui. Você também pode ditar ou digitar." autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button type="submit" class="btn">Conferir</button>
+      </div>
+      <span class="help">Só a primeira tentativa de cada card conta. Depois de errar, repita a versão certa; a repetição aparece, mas não entra na contagem. Sem microfone nesta página? Dite neste campo com o ditado do teclado (Windows + H) e pare de falar: a conferência é automática depois de ~1,5 s.</span>
+    </form>
+
+    <div id="res" aria-live="polite"></div>
+
+    <div class="nav">
+      <button type="button" class="btn small" id="bPrev">Anterior</button>
+      <span class="pos" id="pos"></span>
+      <button type="button" class="btn small" id="bRand">Aleatória</button>
+      <button type="button" class="btn small" id="bNext">Próxima</button>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="sec">Cards deste filtro</h2>
+    <div class="grid" id="list"></div>
+    <p class="empty" id="listEmpty" hidden>Nenhum card neste filtro ainda.</p>
+  </section>
+
+  <section class="panel">
+    <h2 class="sec" style="margin:0">Resumo para a próxima aula</h2>
+    <p class="help" style="margin:0">Mostra os dias em que você praticou, quantas frases saíram certas de primeira e o que falhou. Copie e cole na abertura da aula.</p>
+    <div class="row">
+      <button type="button" class="btn small" id="bSum">Gerar e copiar resumo</button>
+      <button type="button" class="btn small" id="bReset">Zerar histórico</button>
+    </div>
+    <div id="sumBox"></div>
+    <span class="help" id="sumMsg" aria-live="polite"></span>
+  </section>
+
+  <p class="foot">O reconhecimento de voz escreve o que ouviu, então serve de diagnóstico, igual ao ditado das aulas. Se a transcrição sair estranha, pode ser pronúncia ou microfone: ouça de novo e repita a frase em blocos, sem pausa depois de palavra que termina em T ou -ed.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  /*PURE-START*/
+  var PAST = {
+    found: 'find', fixed: 'fix', wrote: 'write', sent: 'send', tested: 'test', worked: 'work', passed: 'pass',
+    studied: 'study', used: 'use', archived: 'archive', started: 'start', created: 'create', made: 'make',
+    ran: 'run', sold: 'sell', thought: 'think', saw: 'see', did: 'do', had: 'have', went: 'go', said: 'say',
+    built: 'build', finished: 'finish', forgot: 'forget', got: 'get', told: 'tell', knew: 'know', opened: 'open',
+    changed: 'change', checked: 'check', answered: 'answer', needed: 'need', watched: 'watch', called: 'call', talked: 'talk'
+  };
+
+  function norm(s) {
+    s = String(s).toLowerCase().replace(/[’‘]/g, "'");
+    s = s.replace(/@/g, ' at ');
+    s = s.replace(/([a-z0-9])\.([a-z])/g, '$1 dot $2');
+    s = s.replace(/\bdot[ -]?net\b/g, 'net').replace(/\be[ -]mail\b/g, 'email');
+    s = s.replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+    s = s.replace(/\bi am\b/g, "i'm").replace(/\bdid not\b/g, "didn't");
+    s = s.replace(/\bd d d\b/g, 'ddd').replace(/\bten\b/g, '10').replace(/\b30th\b/g, 'thirtieth').replace(/\bmay 30\b/g, 'may thirtieth');
+    return s;
+  }
+
+  function lcsMask(a, b) {
+    var n = a.length, m = b.length, d = [], i, j;
+    for (i = 0; i <= n; i++) { d[i] = []; for (j = 0; j <= m; j++) d[i][j] = 0; }
+    for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--)
+      d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
+    var ma = [], mb = [];
+    for (i = 0; i < n; i++) ma[i] = false;
+    for (j = 0; j < m; j++) mb[j] = false;
+    i = 0; j = 0;
+    while (i < n && j < m) {
+      if (a[i] === b[j]) { ma[i] = true; mb[j] = true; i++; j++; }
+      else if (d[i + 1][j] >= d[i][j + 1]) i++; else j++;
+    }
+    return [ma, mb];
+  }
+
+  function hintsFor(ea, ha, me, mh) {
+    var out = [], i, miss = [], extra = [];
+    ea.forEach(function (t, k) { if (!me[k]) miss.push(t); });
+    ha.forEach(function (t, k) { if (!mh[k]) extra.push(t); });
+    function has(arr, x) { return arr.indexOf(x) > -1; }
+
+    for (i = 1; i < ha.length; i++) {
+      if (!mh[i] && ha[i] === 'it' && /(t|d)$/.test(ha[i - 1])) {
+        out.push('O T final virou "it". Trave o T atrás dos dentes, sem soltar ar, e fale em bloco, sem pausa depois da palavra.');
+        break;
+      }
+    }
+    if (has(miss, "didn't") && (has(extra, "don't") || has(extra, 'do'))) {
+      out.push('Passado: ontem ou semana passada pede didn\'t, não don\'t.');
+    }
+    miss.forEach(function (t) {
+      if (PAST[t] && has(extra, PAST[t])) out.push('Saiu "' + PAST[t] + '", a forma do dicionário. No passado é "' + t + '".');
+    });
+    if (has(miss, 'the')) out.push('Faltou o the. Olhe o português: o, a, no, na pedem the (menos nome).');
+    else if (has(extra, 'the') && !has(miss, 'the')) out.push('Sobrou o the. Nome (.NET, Chrome), plural e coisa em geral não levam artigo.');
+    if (has(miss, 'a') || has(miss, 'an')) out.push('Faltou a ou an. "Um" e "uma" viram a/an, e coisa no singular nunca fica sozinha. An antes de som de vogal.');
+    else if ((has(extra, 'a') && has(miss, 'an')) || (has(extra, 'an') && has(miss, 'a'))) out.push('An antes de som de vogal (an email), a nos outros (a bug).');
+    if (has(miss, 'on') || has(miss, 'in') || has(extra, 'on') || has(extra, 'in')) {
+      out.push('Preposição: no, na (site, tarefa, projeto, Amazon) = on. Dentro de um programa (Chrome, .NET) = in.');
+    }
+    if (has(miss, 'it')) out.push('Faltou o it: quem funcionou ou passou foi a coisa, então it.');
+    if (has(extra, 'he') && has(miss, 'it')) out.push('He é só para homem; coisa é it.');
+    if (has(miss, 'i')) out.push('Faltou o I: em inglês o "eu" sempre aparece.');
+    if (has(miss, 'last')) out.push('Semana passada = last week, sem in e sem the.');
+    if (has(miss, 'thirtieth') && (has(extra, 'thirty') || has(extra, '30'))) out.push('Em data é thirtieth, nunca thirty.');
+    return out.slice(0, 3);
+  }
+  /*PURE-END*/
+
+  var KEY = 'frases-aula-01-v1';
+  var DECK = { date: '2026-09-24' };
+  var TABS = [['fr', 'Frases'], ['ent', 'Entrevista'], ['err', 'Errei']];
+  var GROUPS = [["all", "Todas"], ["did", "did / didn't"], ["irr", "Irregulares"], ["two", "Dois verbos"], ["day", "Seu dia"], ["fix", "Corrigir"]];
+  var GLAB = {"did": "Passado · did e didn't", "irr": "Irregulares na afirmativa", "two": "Dois verbos na frase", "day": "Sobre o seu dia", "fix": "Corrija o erro"};
+  var KLAB = { fr: 'Frase', q: 'Pergunta', ent: 'Entrevista' };
+  var STLAB = { 'new': 'Novo', err: 'Errou', mid: 'Treinando', ok: 'Acertou' };
+
+  function F(grp, pt, en, why, o) { o = o || {}; return { id: 'fr:' + en, kind: 'fr', grp: grp, pt: pt, en: en, why: why || '', blocks: o.blocks || '', note: o.note || '' }; }
+  function Q(q, en, o) { o = o || {}; return { id: 'q:' + q, kind: 'q', grp: '', q: q, en: en, why: o.why || '', blocks: o.blocks || '', note: o.note || '' }; }
+  function E(pt, en, o) { o = o || {}; return { id: 'ent:' + pt, kind: 'ent', grp: '', pt: pt, en: en, why: '', blocks: o.blocks || '', note: o.note || '' }; }
+
+  var CARDS = [
+    {"id": "fr:I checked the code.", "kind": "fr", "grp": "did", "pt": "Eu verifiquei o código.", "en": "I checked the code.", "why": "Passado regular: -ed. Checked termina em T seco.", "blocks": "", "note": ""},
+    {"id": "fr:I didn't check the code.", "kind": "fr", "grp": "did", "pt": "Eu não verifiquei o código.", "en": "I didn't check the code.", "why": "didn't + verbo do dicionário: check, sem -ed.", "blocks": "", "note": ""},
+    {"id": "fr:Did you check the code?", "kind": "fr", "grp": "did", "pt": "Você verificou o código?", "en": "Did you check the code?", "why": "Did no começo, e o verbo volta ao dicionário.", "blocks": "", "note": ""},
+    {"id": "fr:She fixed the bug.", "kind": "fr", "grp": "did", "pt": "Ela consertou o bug.", "en": "She fixed the bug.", "why": "Fixed termina em T seco.", "blocks": "", "note": ""},
+    {"id": "fr:She didn't fix the bug.", "kind": "fr", "grp": "did", "pt": "Ela não consertou o bug.", "en": "She didn't fix the bug.", "why": "didn't + fix, sem -ed.", "blocks": "", "note": ""},
+    {"id": "fr:Did she fix the bug?", "kind": "fr", "grp": "did", "pt": "Ela consertou o bug?", "en": "Did she fix the bug?", "why": "", "blocks": "", "note": ""},
+    {"id": "fr:They tested the app in Edge.", "kind": "fr", "grp": "did", "pt": "Eles testaram o app no Edge.", "en": "They tested the app in Edge.", "why": "Tested ganha uma sílaba: TÉS-tid. Dentro do programa = in.", "blocks": "", "note": ""},
+    {"id": "fr:They didn't test the app in Edge.", "kind": "fr", "grp": "did", "pt": "Eles não testaram o app no Edge.", "en": "They didn't test the app in Edge.", "why": "", "blocks": "", "note": ""},
+    {"id": "fr:Did they test the app in Edge?", "kind": "fr", "grp": "did", "pt": "Eles testaram o app no Edge?", "en": "Did they test the app in Edge?", "why": "", "blocks": "", "note": ""},
+    {"id": "fr:The test didn't pass.", "kind": "fr", "grp": "did", "pt": "O teste não passou.", "en": "The test didn't pass.", "why": "", "blocks": "", "note": ""},
+    {"id": "fr:I didn't send the file.", "kind": "fr", "grp": "did", "pt": "Eu não enviei o arquivo.", "en": "I didn't send the file.", "why": "didn't + send (nunca sent depois de didn't).", "blocks": "", "note": ""},
+    {"id": "fr:Did you write the code?", "kind": "fr", "grp": "did", "pt": "Você escreveu o código?", "en": "Did you write the code?", "why": "Depois de did, write no dicionário.", "blocks": "", "note": ""},
+    {"id": "fr:We didn't build the site.", "kind": "fr", "grp": "did", "pt": "Nós não construímos o site.", "en": "We didn't build the site.", "why": "didn't + build.", "blocks": "", "note": ""},
+    {"id": "fr:Did you forget the password?", "kind": "fr", "grp": "did", "pt": "Você esqueceu a senha?", "en": "Did you forget the password?", "why": "", "blocks": "", "note": ""},
+    {"id": "fr:I sent the email to my boss.", "kind": "fr", "grp": "irr", "pt": "Eu enviei o e-mail para o meu chefe.", "en": "I sent the email to my boss.", "why": "Afirmativa: o próprio verbo muda. Send vira sent.", "blocks": "", "note": ""},
+    {"id": "fr:He found the bug.", "kind": "fr", "grp": "irr", "pt": "Ele encontrou o bug.", "en": "He found the bug.", "why": "Find vira found.", "blocks": "", "note": ""},
+    {"id": "fr:I wrote the test.", "kind": "fr", "grp": "irr", "pt": "Eu escrevi o teste.", "en": "I wrote the test.", "why": "Write vira wrote.", "blocks": "", "note": ""},
+    {"id": "fr:She forgot the password.", "kind": "fr", "grp": "irr", "pt": "Ela esqueceu a senha.", "en": "She forgot the password.", "why": "Forget vira forgot.", "blocks": "", "note": ""},
+    {"id": "fr:We built the site.", "kind": "fr", "grp": "irr", "pt": "Nós construímos o site.", "en": "We built the site.", "why": "Build vira built, nunca buildeda.", "blocks": "", "note": ""},
+    {"id": "fr:They found the bug.", "kind": "fr", "grp": "irr", "pt": "Eles encontraram o bug.", "en": "They found the bug.", "why": "", "blocks": "", "note": ""},
+    {"id": "fr:I built a new system and sold it on Amazon.", "kind": "fr", "grp": "irr", "pt": "Eu construí um sistema novo e vendi na Amazon.", "en": "I built a new system and sold it on Amazon.", "why": "Cada verbo carrega o próprio passado: built e sold. Na Amazon = on Amazon.", "blocks": "I built a new system | and sold it on Amazon.", "note": ""},
+    {"id": "fr:I opened the file and changed the code.", "kind": "fr", "grp": "two", "pt": "Eu abri o arquivo e mudei o código.", "en": "I opened the file and changed the code.", "why": "Os dois verbos no passado, mesmo depois do and.", "blocks": "", "note": ""},
+    {"id": "fr:I wrote the test and sent it to my boss.", "kind": "fr", "grp": "two", "pt": "Eu escrevi o teste e enviei para o meu chefe.", "en": "I wrote the test and sent it to my boss.", "why": "Depois de sent, diga o it: o inglês não deixa o \"quê\" escondido.", "blocks": "", "note": ""},
+    {"id": "fr:She fixed the bug and tested the site in Chrome.", "kind": "fr", "grp": "two", "pt": "Ela consertou o bug e testou o site no Chrome.", "en": "She fixed the bug and tested the site in Chrome.", "why": "", "blocks": "", "note": ""},
+    {"id": "fr:I tested many features and worked on new tasks about the invoice.", "kind": "fr", "grp": "two", "pt": "Eu testei várias funcionalidades e trabalhei em tarefas novas sobre a fatura.", "en": "I tested many features and worked on new tasks about the invoice.", "why": "Worked on = trabalhar em. Sem artigo antes de new tasks (plural).", "blocks": "I tested many features | and worked on new tasks | about the invoice.", "note": ""},
+    {"id": "fr:I fixed task number eight and sent it to GitHub in a pull request.", "kind": "fr", "grp": "two", "pt": "Eu consertei a tarefa número oito e enviei para o GitHub em um pull request.", "en": "I fixed task number eight and sent it to GitHub in a pull request.", "why": "Task number eight: sem artigo. Em um pull request = in a pull request.", "blocks": "I fixed task number eight | and sent it to GitHub | in a pull request.", "note": ""},
+    {"id": "fr:I worked in Visual Studio yesterday.", "kind": "fr", "grp": "day", "pt": "Eu trabalhei no Visual Studio ontem.", "en": "I worked in Visual Studio yesterday.", "why": "Visual Studio é nome de programa: sem the. Dentro do programa = in.", "blocks": "", "note": ""},
+    {"id": "fr:I worked on my website yesterday.", "kind": "fr", "grp": "day", "pt": "Eu trabalhei no meu site ontem.", "en": "I worked on my website yesterday.", "why": "Trabalhar no que você constrói = on.", "blocks": "", "note": ""},
+    {"id": "fr:I watched a movie about the Amazon on Netflix.", "kind": "fr", "grp": "day", "pt": "Eu assisti a um filme sobre a Amazônia na Netflix.", "en": "I watched a movie about the Amazon on Netflix.", "why": "Um filme = a movie. Netflix e Amazon: on.", "blocks": "", "note": ""},
+    {"id": "fr:It was about my vacation.", "kind": "fr", "grp": "day", "pt": "Era sobre as minhas férias.", "en": "It was about my vacation.", "why": "Vacation: vei-KÊI-shân (não vocation).", "blocks": "", "note": ""},
+    {"id": "fr:Please tell me if this is correct.", "kind": "fr", "grp": "day", "pt": "Por favor, me diga se isso está correto.", "en": "Please tell me if this is correct.", "why": "Tell me if...", "blocks": "", "note": ""},
+    {"id": "fx:I send it the email to my boss.", "kind": "fr", "grp": "fix", "pt": "Corrija: I send it the email to my boss.", "en": "I sent the email to my boss.", "why": "Afirmativa: o próprio verbo muda.", "blocks": "", "note": ""},
+    {"id": "fx:He find it the bug.", "kind": "fr", "grp": "fix", "pt": "Corrija: He find it the bug.", "en": "He found the bug.", "why": "Idem: find vira found.", "blocks": "", "note": ""},
+    {"id": "fx:I forget it.", "kind": "fr", "grp": "fix", "pt": "Corrija: I forget it.", "en": "I forgot it.", "why": "Aconteceu ontem: passado.", "blocks": "", "note": ""},
+    {"id": "fx:I buildeda new system.", "kind": "fr", "grp": "fix", "pt": "Corrija: I buildeda new system.", "en": "I built a new system.", "why": "Build é irregular, não aceita -ed.", "blocks": "", "note": ""},
+    {"id": "fx:I not find a difficult bug.", "kind": "fr", "grp": "fix", "pt": "Corrija: I not find a difficult bug.", "en": "I didn't find a difficult bug.", "why": "\"I not\" não existe: use didn't.", "blocks": "", "note": ""},
+    {"id": "fx:No, I didn't a email.", "kind": "fr", "grp": "fix", "pt": "Corrija: No, I didn't a email.", "en": "No, I didn't send an email.", "why": "Didn't precisa de um verbo depois.", "blocks": "", "note": ""},
+    {"id": "fx:I tested many features and work in new tasks.", "kind": "fr", "grp": "fix", "pt": "Corrija: I tested many features and work in new tasks.", "en": "I tested many features and worked on new tasks.", "why": "Cada verbo carrega o próprio passado, mesmo depois do and.", "blocks": "", "note": ""},
+    {"id": "fx:I fix in task number eight.", "kind": "fr", "grp": "fix", "pt": "Corrija: I fix in task number eight.", "en": "I fixed task number eight.", "why": "Passado, e nada entre o verbo e a coisa.", "blocks": "", "note": ""},
+    {"id": "fx:I tested in site in Chrome.", "kind": "fr", "grp": "fix", "pt": "Corrija: I tested in site in Chrome.", "en": "I tested the site in Chrome.", "why": "\"O site\" em português = the site.", "blocks": "", "note": ""},
+    {"id": "fx:I didn't send email to my boss.", "kind": "fr", "grp": "fix", "pt": "Corrija: I didn't send email to my boss.", "en": "I didn't send an email to my boss.", "why": "Um e-mail qualquer = an email.", "blocks": "", "note": ""},
+    {"id": "fx:I am developer the software.", "kind": "fr", "grp": "fix", "pt": "Corrija: I am developer the software.", "en": "I'm a software developer.", "why": "Profissão sempre leva a.", "blocks": "", "note": ""},
+    {"id": "fx:I use the Visual Studio.", "kind": "fr", "grp": "fix", "pt": "Corrija: I use the Visual Studio.", "en": "I use Visual Studio.", "why": "Nome de programa não leva the.", "blocks": "", "note": ""},
+    {"id": "fx:I worked in my website.", "kind": "fr", "grp": "fix", "pt": "Corrija: I worked in my website.", "en": "I worked on my website.", "why": "Trabalhar no que você constrói = on.", "blocks": "", "note": ""},
+    {"id": "fx:Did you test about the invoice?", "kind": "fr", "grp": "fix", "pt": "Corrija: Did you test about the invoice?", "en": "Did you test the invoice?", "why": "Depois de test vem direto o objeto.", "blocks": "", "note": ""},
+    {"id": "fx:I wrote the test and sent to my boss.", "kind": "fr", "grp": "fix", "pt": "Corrija: I wrote the test and sent to my boss.", "en": "I wrote the test and sent it to my boss.", "why": "Inglês não subentende o quê: diga it.", "blocks": "", "note": ""},
+    {"id": "ent:Quem é você e o que faz?", "kind": "ent", "grp": "", "pt": "Quem é você e o que faz?", "en": "I'm a software developer, and I work with web applications.", "why": "", "blocks": "", "note": ""},
+    {"id": "ent:Quais ferramentas você usa?", "kind": "ent", "grp": "", "pt": "Quais ferramentas você usa?", "en": "I use Visual Studio every day, and I test my applications in Chrome and Edge.", "why": "", "blocks": "I use Visual Studio every day, | and I test my applications | in Chrome and Edge.", "note": ""},
+    {"id": "ent:Tell me about yourself. (versão da Aula 1)", "kind": "ent", "grp": "", "pt": "Tell me about yourself. (versão da Aula 1)", "en": "I'm a software developer, and I work with web applications. I use Visual Studio every day, and I test my applications in Chrome and Edge.", "why": "", "blocks": "I'm a software developer, | and I work with web applications. | I use Visual Studio every day, | and I test my applications | in Chrome and Edge.", "note": ""}
+  ];
+
+  var store = { stats: {}, days: [], tab: 'fr', group: 'all', slow: false, auto: false, hide: { fr: true, q: true, ent: false } };
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var o = JSON.parse(raw);
+      if (o && typeof o === 'object') {
+        if (o.stats && typeof o.stats === 'object') store.stats = o.stats;
+        if (Array.isArray(o.days)) store.days = o.days.filter(function (d) { return typeof d === 'string'; });
+        if (typeof o.tab === 'string') store.tab = o.tab;
+        if (typeof o.group === 'string') store.group = o.group;
+        store.slow = !!o.slow;
+        store.auto = !!o.auto;
+        if (o.hide && typeof o.hide === 'object') {
+          store.hide.fr = !!o.hide.fr; store.hide.q = !!o.hide.q; store.hide.ent = !!o.hide.ent;
+        }
+      }
+    }
+  } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+
+  function today() {
+    var d = new Date();
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+  function fmt(d) { return d.slice(8) + '/' + d.slice(5, 7); }
+  function daysAfter() { return store.days.filter(function (d) { return d > DECK.date; }).sort(); }
+
+  function status(id) {
+    var h = (store.stats[id] || {}).h || [];
+    if (!h.length) return 'new';
+    if (h[h.length - 1] === 0) return 'err';
+    if (h.length >= 2 && h[h.length - 2] === 1) return 'ok';
+    return 'mid';
+  }
+  function dotStatus(id) {
+    var st = store.stats[id];
+    if (!st || !st.h || !st.h.length) return 'new';
+    var cur = st.cur !== undefined ? st.cur : st.h[st.h.length - 1];
+    return cur === 0 ? 'err' : 'ok';
+  }
+  function label(c) { return c.kind === 'q' ? c.q : (c.pt || c.en); }
+
+  function visible() {
+    var t = store.tab;
+    return CARDS.filter(function (c) {
+      if (t === 'err') return dotStatus(c.id) === 'err';
+      if (c.kind !== t) return false;
+      if (t === 'fr' && store.group !== 'all') return c.grp === store.group;
+      return true;
+    });
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var curId = null, shown = false, attemptDone = false;
+  var listening = false, rec = null, micBlocked = false, wantMic = false;
+  var typeTimer = null;
+  var LIVE = 'Microfone ligado. Diga a frase do card; cada frase é conferida sozinha.';
+
+  function current() {
+    var v = visible();
+    var c = v.filter(function (x) { return x.id === curId; })[0];
+    if (!c && v.length) { c = v[0]; curId = c.id; }
+    return c || null;
+  }
+  function hideOn(kind) { return !!store.hide[kind]; }
+
+  function record(id, ok, heardRaw) {
+    var s = store.stats[id] || { h: [], n: 0, k: 0 };
+    s.h.push(ok ? 1 : 0);
+    if (s.h.length > 6) s.h = s.h.slice(-6);
+    s.n = (s.n || 0) + 1;
+    if (ok) s.k = (s.k || 0) + 1;
+    s.last = String(heardRaw).slice(0, 200);
+    s.cur = ok ? 1 : 0;
+    store.stats[id] = s;
+    var d = today();
+    if (store.days.indexOf(d) < 0) store.days.push(d);
+    save();
+  }
+
+  function setNote(msg, bad) {
+    var n = $('micnote');
+    n.textContent = msg || '';
+    n.className = 'micnote' + (bad ? ' bad' : '');
+  }
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) { setNote('Este navegador não tem voz para o botão Ouvir.', true); return; }
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = store.slow ? 0.6 : 0.9;
+      var vs = window.speechSynthesis.getVoices();
+      var v = vs.filter(function (x) { return x.lang === 'en-US'; })[0] || vs.filter(function (x) { return /^en/i.test(x.lang); })[0];
+      if (v) u.voice = v;
+      window.speechSynthesis.speak(u);
+    } catch (e) { setNote('Não consegui tocar o áudio neste navegador.', true); }
+  }
+
+  function fillTokens(el, tokens, mask) {
+    el.textContent = '';
+    tokens.forEach(function (t, i) {
+      var s = document.createElement('span');
+      if (!mask[i]) s.className = 'm';
+      s.textContent = t;
+      el.appendChild(s);
+      if (i < tokens.length - 1) el.appendChild(document.createTextNode(' '));
+    });
+  }
+
+  var PRON = {
+    "I checked the code.": "ai TCHÉKT thâ KÔUD",
+    "I didn't check the code.": "ai DI-dnt TCHÉK thâ KÔUD",
+    "Did you check the code?": "DID iu TCHÉK thâ KÔUD",
+    "She fixed the bug.": "shi FIKST thâ BÂG",
+    "She didn't fix the bug.": "shi DI-dnt FIKS thâ BÂG",
+    "Did she fix the bug?": "DID shi FIKS thâ BÂG",
+    "They tested the app in Edge.": "thêi TÉS-tid thi ÉP in ÉDJ",
+    "They didn't test the app in Edge.": "thêi DI-dnt TÉST thi ÉP in ÉDJ",
+    "Did they test the app in Edge?": "DID thêi TÉST thi ÉP in ÉDJ",
+    "The test didn't pass.": "thâ TÉST DI-dnt PÉS",
+    "I didn't send the file.": "ai DI-dnt SÉND thâ FAIL",
+    "Did you write the code?": "DID iu RAIT thâ KÔUD",
+    "We didn't build the site.": "uí DI-dnt BILD thâ SAIT",
+    "Did you forget the password?": "DID iu fâr-GÉT thâ PÉS-uârd",
+    "I sent the email to my boss.": "ai SÉN thi Í-mêil tu mai BÓS",
+    "He found the bug.": "hi FÁUND thâ BÂG",
+    "I wrote the test.": "ai RÔUT thâ TÉST",
+    "She forgot the password.": "shi fâr-GÁT thâ PÉS-uârd",
+    "We built the site.": "uí BILT thâ SAIT",
+    "They found the bug.": "thêi FÁUND thâ BÂG",
+    "I built a new system and sold it on Amazon.": "ai BILT â NÚ SÍS-tâm ând SÔUL-dit ón Â-mâ-zon",
+    "I opened the file and changed the code.": "ai ÔU-pend thâ FAIL ând TCHÊINDJD thâ KÔUD",
+    "I wrote the test and sent it to my boss.": "ai RÔUT thâ TÉST ând SÉN-tit tu mai BÓS",
+    "She fixed the bug and tested the site in Chrome.": "shi FIKST thâ BÂG ând TÉS-tid thâ SAIT in KRÔUM",
+    "I tested many features and worked on new tasks about the invoice.": "ai TÉS-tid MÉ-ni FÍ-tchârz ând UÂRK-tón NÚ TÉSKS â-BÁUT thi ÍN-vóis",
+    "I fixed task number eight and sent it to GitHub in a pull request.": "ai FIKST TÉSK NÂM-bâr ÊIT ând SÉN-tit tu GUIT-hâb in â PÚL ri-KUÉST",
+    "I worked in Visual Studio yesterday.": "ai UÂRKT in VI-jú-âl STÚ-di-ôu IÉS-târ-dêi",
+    "I worked on my website yesterday.": "ai UÂRK-tón mai UÉB-sait IÉS-târ-dêi",
+    "I watched a movie about the Amazon on Netflix.": "ai UÁTCHT â MÚ-vi â-BÁUT thi Â-mâ-zon ón NÉT-fliks",
+    "It was about my vacation.": "it uâz â-BÁUT mai vei-KÊI-shân",
+    "Please tell me if this is correct.": "PLÍZ TÉL mi if THIS iz kâ-RÉKT",
+    "I forgot it.": "ai fâr-GÁ-tit",
+    "I built a new system.": "ai BILT â NÚ SÍS-tâm",
+    "I didn't find a difficult bug.": "ai DI-dnt FÁIND â DI-fi-kâlt BÂG",
+    "No, I didn't send an email.": "NÔU, ai DI-dnt SÉND ân Í-mêil",
+    "I tested many features and worked on new tasks.": "ai TÉS-tid MÉ-ni FÍ-tchârz ând UÂRK-tón NÚ TÉSKS",
+    "I fixed task number eight.": "ai FIKST TÉSK NÂM-bâr ÊIT",
+    "I tested the site in Chrome.": "ai TÉS-tid thâ SAIT in KRÔUM",
+    "I didn't send an email to my boss.": "ai DI-dnt SÉND ân Í-mêil tu mai BÓS",
+    "I'm a software developer.": "aim â SÓFT-uér di-VÉ-lâ-pâr",
+    "I use Visual Studio.": "ai IÚZ VI-jú-âl STÚ-di-ôu",
+    "I worked on my website.": "ai UÂRK-tón mai UÉB-sait",
+    "Did you test the invoice?": "DID iu TÉST thi ÍN-vóis",
+    "I'm a software developer, and I work with web applications.": "aim â SÓFT-uér di-VÉ-lâ-pâr, ând ai UÂRK uith UÉB é-pli-KÊI-shânz",
+    "I use Visual Studio every day, and I test my applications in Chrome and Edge.": "ai IÚZ VI-jú-âl STÚ-di-ôu É-vri DÊI, ând ai TÉST mai é-pli-KÊI-shânz in KRÔUM ând ÉDJ"
+  };
+  function sayFor(en) {
+    var parts = String(en).split(/(?<=[.?!])\s+/), out = [];
+    for (var i = 0; i < parts.length; i++) { if (!PRON[parts[i]]) return ''; out.push(PRON[parts[i]]); }
+    return out.join('  ·  ');
+  }
+
+  function renderTarget(c) {
+    var el = $('ctarget');
+    el.textContent = '';
+    if (!shown) {
+      var d = document.createElement('div');
+      d.className = 'hid';
+      var p = document.createElement('span');
+      p.textContent = c.kind === 'q' ? 'A resposta está escondida. Responda primeiro.' : 'O inglês está escondido. Diga a frase primeiro.';
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn small'; b.textContent = 'Mostrar';
+      b.addEventListener('click', function () {
+        shown = true; renderTarget(c);
+        $('bListenAns').hidden = c.kind !== 'q';
+      });
+      d.appendChild(p); d.appendChild(b);
+      el.appendChild(d);
+      return;
+    }
+    var box = document.createElement('div');
+    box.className = 'target';
+    var l = document.createElement('span');
+    l.className = 'lab';
+    l.textContent = c.kind === 'q' ? 'Resposta certa' : 'Em inglês';
+    var t = document.createElement('div');
+    t.className = 'tt';
+    t.textContent = c.en;
+    box.appendChild(l); box.appendChild(t);
+    var sy = sayFor(c.en);
+    if (sy) {
+      var pr = document.createElement('div');
+      pr.className = 'pron';
+      var pl = document.createElement('span');
+      pl.className = 'lab';
+      pl.textContent = 'Como se diz';
+      var pv = document.createElement('div');
+      pv.className = 'pv';
+      pv.textContent = sy;
+      pr.appendChild(pl); pr.appendChild(pv);
+      box.appendChild(pr);
+    }
+    if (c.blocks) {
+      var bl = document.createElement('div');
+      bl.className = 'blk';
+      bl.textContent = 'Blocos: ' + c.blocks;
+      box.appendChild(bl);
+    }
+    el.appendChild(box);
+  }
+
+  function renderMeta(c) {
+    $('ctag').textContent = c.kind === 'fr' ? GLAB[c.grp] : KLAB[c.kind];
+    var s = dotStatus(c.id);
+    $('cstatus').className = 'st st-' + s;
+    $('cstatust').textContent = STLAB[s];
+  }
+
+  function renderCard() {
+    var c = current();
+    $('res').textContent = '';
+    $('heard').value = '';
+    attemptDone = false;
+    if (!c) {
+      $('ctag').textContent = '';
+      $('cstatust').textContent = '';
+      $('plab').textContent = '';
+      $('cprompt').textContent = store.tab === 'err' ? 'Nenhuma frase com erro por enquanto.' : '—';
+      $('ctarget').textContent = '';
+      $('cnote').textContent = '';
+      $('pos').textContent = '0 de 0';
+      $('bListenAns').hidden = true;
+      return;
+    }
+    shown = !hideOn(c.kind);
+    renderMeta(c);
+    if (c.kind === 'q') { $('plab').textContent = 'Responda em inglês'; $('cprompt').textContent = c.q; $('bListenT').textContent = 'Ouvir pergunta'; }
+    else if (c.kind === 'ent') { $('plab').textContent = 'Entrevista · responda em inglês'; $('cprompt').textContent = c.pt; $('bListenT').textContent = 'Ouvir'; }
+    else { $('plab').textContent = 'Diga em inglês'; $('cprompt').textContent = c.pt; $('bListenT').textContent = 'Ouvir'; }
+    renderTarget(c);
+    $('cnote').textContent = c.note;
+    $('bListenAns').hidden = !(c.kind === 'q' && shown);
+    $('bHide').setAttribute('aria-pressed', hideOn(c.kind) ? 'true' : 'false');
+    var v = visible();
+    var idx = v.map(function (x) { return x.id; }).indexOf(c.id);
+    $('pos').textContent = (idx + 1) + ' de ' + v.length;
+    setNote(listening ? LIVE : '');
+  }
+
+  function check(rawText) {
+    clearTimeout(typeTimer);
+    var c = current();
+    if (!c) return;
+    var res = $('res');
+    res.textContent = '';
+    var heard = norm(rawText);
+    if (!heard) { setNote('Fale ou digite algo antes de conferir.', true); return; }
+    var exp = norm(c.en);
+    var ok = heard === exp;
+    var counted = false;
+    if (!attemptDone) { attemptDone = true; counted = true; record(c.id, ok, rawText); }
+    else { var sc = store.stats[c.id]; if (sc) { sc.cur = ok ? 1 : 0; save(); } }
+    shown = true;
+    renderTarget(c);
+    $('bListenAns').hidden = c.kind !== 'q';
+
+    var box = document.createElement('div');
+    box.className = 'res ' + (ok ? 'pass' : 'fail');
+    var v = document.createElement('div');
+    v.className = 'verdict';
+    v.textContent = ok ? 'PASSOU' : 'FALHOU';
+    var sm = document.createElement('small');
+    sm.textContent = counted ? '1ª tentativa' : 'repetição, não conta';
+    v.appendChild(sm);
+    box.appendChild(v);
+
+    var ea = exp.split(' '), ha = heard.split(' ');
+    var masks = ok ? [ea.map(function () { return true; }), ha.map(function () { return true; })] : lcsMask(ea, ha);
+    var l1 = document.createElement('div'); l1.className = 'line';
+    var k1 = document.createElement('span'); k1.className = 'k'; k1.textContent = 'esperado';
+    var v1 = document.createElement('span'); v1.className = 'v';
+    var l2 = document.createElement('div'); l2.className = 'line';
+    var k2 = document.createElement('span'); k2.className = 'k'; k2.textContent = 'ouvido';
+    var v2 = document.createElement('span'); v2.className = 'v';
+    fillTokens(v1, ea, masks[0]);
+    fillTokens(v2, ha, masks[1]);
+    l1.appendChild(k1); l1.appendChild(v1);
+    l2.appendChild(k2); l2.appendChild(v2);
+    box.appendChild(l1); box.appendChild(l2);
+
+    var p = document.createElement('p');
+    p.className = 'why';
+    if (ok) {
+      p.textContent = 'Certo. Diga de novo em blocos para fixar.';
+      box.appendChild(p);
+    } else {
+      var hs = hintsFor(ea, ha, masks[0], masks[1]);
+      if (!hs.length) hs = ['Pode ser pronúncia ou microfone. Ouça de novo e repita em blocos. Se você disse certo, o microfone errou.'];
+      var ul = document.createElement('ul');
+      ul.className = 'hints';
+      hs.forEach(function (h) { var li = document.createElement('li'); li.textContent = h; ul.appendChild(li); });
+      box.appendChild(ul);
+      p.textContent = 'Agora repita a versão certa por ditado.';
+      box.appendChild(p);
+    }
+    if (c.why) {
+      var w = document.createElement('p');
+      w.className = 'why';
+      var b = document.createElement('b'); b.textContent = 'Por quê: ';
+      w.appendChild(b); w.appendChild(document.createTextNode(c.why));
+      box.appendChild(w);
+    }
+    res.appendChild(box);
+    renderMeta(c);
+    renderList();
+    renderProg();
+    $('heard').value = '';
+    if (listening) { setNote(LIVE); } else { try { $('heard').focus({ preventScroll: true }); } catch (e0) {} }
+    if (ok && store.auto) {
+      var okId = c.id;
+      setTimeout(function () { if (curId === okId) move(1); }, 1800);
+    }
+  }
+
+  /* microfone: liga uma vez e fica ligado */
+  function setMicUi(on) {
+    listening = on;
+    var b = $('bMic');
+    b.className = 'btn ' + (on ? 'rec' : 'primary');
+    $('bMicT').textContent = on ? 'Microfone ligado (toque para desligar)' : 'Ligar microfone';
+  }
+  function stopMic() {
+    wantMic = false;
+    if (rec) { try { rec.stop(); } catch (e) {} }
+    setMicUi(false);
+    setNote('');
+  }
+  function openRec() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    rec = new SR();
+    rec.lang = 'en-US';
+    rec.interimResults = true;
+    rec.maxAlternatives = 5;
+    rec.continuous = true;
+    rec.onresult = function (e) {
+        for (var i = e.resultIndex; i < e.results.length; i++) {
+          var t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) {
+            var c0 = current();
+            if (c0) {
+              var tg = [norm(c0.en)];
+              for (var a = 0; a < e.results[i].length; a++) {
+                var alt = e.results[i][a].transcript;
+                if (tg.indexOf(norm(alt)) > -1) { t = alt; break; }
+              }
+            }
+          }
+          $('heard').value = t;
+          if (e.results[i].isFinal) { check(t); }
+        }
+      };
+      rec.onerror = function (e) {
+      var code = e && e.error;
+      if (code === 'not-allowed' || code === 'service-not-allowed') {
+        micBlocked = true; wantMic = false;
+        setNote('O navegador bloqueou o microfone nesta página. Dite no campo abaixo com o ditado do teclado (Windows + H) ou abra a versão local do arquivo.', true);
+      } else if (code === 'audio-capture') {
+        wantMic = false;
+        setNote('Não encontrei um microfone neste computador.', true);
+      } else if (code === 'network') {
+        wantMic = false;
+        setNote('O reconhecimento de voz precisa de internet.', true);
+      } else if (code !== 'aborted' && code !== 'no-speech') {
+        wantMic = false;
+        setNote('O reconhecimento de voz falhou (' + code + '). Tente ligar de novo.', true);
+      }
+    };
+    rec.onend = function () {
+      if (wantMic) { setTimeout(function () { if (!wantMic) return; try { openRec(); } catch (err) { stopMic(); } }, 300); return; }
+      setMicUi(false);
+    };
+    rec.start();
+  }
+  function startMic() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      setNote('Este navegador não tem reconhecimento de voz. Use o Chrome ou o Edge, ou dite no campo abaixo com o ditado do teclado.', true);
+      return;
+    }
+    if (listening) { stopMic(); return; }
+    wantMic = true; micBlocked = false;
+    try {
+      openRec();
+      setMicUi(true);
+      setNote(LIVE);
+    } catch (err) {
+      wantMic = false;
+      setMicUi(false);
+      setNote('Não consegui ligar o microfone. Dite no campo abaixo com o ditado do teclado.', true);
+    }
+  }
+
+  function renderTabs() {
+    var t = $('tabs');
+    t.textContent = '';
+    TABS.forEach(function (x) {
+      var n = CARDS.filter(function (c) { return x[0] === 'err' ? dotStatus(c.id) === 'err' : c.kind === x[0]; }).length;
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = x[1] + ' (' + n + ')';
+      b.setAttribute('aria-pressed', store.tab === x[0] ? 'true' : 'false');
+      b.addEventListener('click', function () { store.tab = x[0]; save(); curId = null; renderAll(); });
+      t.appendChild(b);
+    });
+    var g = $('groups');
+    g.textContent = '';
+    g.hidden = store.tab !== 'fr';
+    if (store.tab !== 'fr') return;
+    GROUPS.forEach(function (x) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = x[1];
+      b.setAttribute('aria-pressed', store.group === x[0] ? 'true' : 'false');
+      b.addEventListener('click', function () { store.group = x[0]; save(); curId = null; renderAll(); });
+      g.appendChild(b);
+    });
+  }
+
+  function renderList() {
+    var l = $('list');
+    l.textContent = '';
+    var v = visible();
+    $('listEmpty').hidden = v.length > 0;
+    v.forEach(function (c) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'cell';
+      if (c.id === curId) b.setAttribute('aria-current', 'true');
+      var s = dotStatus(c.id);
+      var d = document.createElement('span');
+      d.className = 'st st-' + s;
+      var dot = document.createElement('span'); dot.className = 'dot';
+      d.appendChild(dot);
+      d.title = STLAB[s];
+      var t = document.createElement('span'); t.className = 't'; t.textContent = label(c);
+      b.appendChild(d); b.appendChild(t);
+      b.addEventListener('click', function () {
+        curId = c.id; renderCard(); renderList();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      l.appendChild(b);
+    });
+  }
+
+  function renderProg() {
+    var n = CARDS.filter(function (c) { return status(c.id) === 'ok'; }).length;
+    $('prog').textContent = 'Dominadas ' + n + ' de ' + CARDS.length + ' · Dias de prática ' + daysAfter().length;
+  }
+  $('heard').addEventListener('input', function () {
+    clearTimeout(typeTimer);
+    if (!$('heard').value.trim()) return;
+    typeTimer = setTimeout(function () { check($('heard').value); }, 1600);
+  });
+  function renderAll() { renderTabs(); renderCard(); renderList(); renderProg(); }
+
+  function move(delta) {
+    var v = visible();
+    if (!v.length) return;
+    var idx = v.map(function (x) { return x.id; }).indexOf(curId);
+    idx = (idx + delta + v.length) % v.length;
+    curId = v[idx].id;
+    renderCard(); renderList();
+  }
+
+  function summary() {
+    var L = [];
+    L.push('RESUMO DE PRÁTICA — Frases da Aula 1 (página de cards)');
+    var d = daysAfter();
+    L.push('Dias com prática depois da aula de ' + fmt(DECK.date) + ': ' + d.length + (d.length ? ' (' + d.map(fmt).join(', ') + ')' : ''));
+    var tot = { fr: [0, 0], q: [0, 0], ent: [0, 0] }, N = 0, K = 0;
+    CARDS.forEach(function (c) {
+      var s = store.stats[c.id];
+      if (!s) return;
+      tot[c.kind][0] += s.k || 0; tot[c.kind][1] += s.n || 0;
+      K += s.k || 0; N += s.n || 0;
+    });
+    L.push('1ª tentativa (acumulado): ' + K + ' certas de ' + N + ' · Frases ' + tot.fr[0] + '/' + tot.fr[1] + ' · Perguntas ' + tot.q[0] + '/' + tot.q[1] + ' · Entrevista ' + tot.ent[0] + '/' + tot.ent[1]);
+    L.push('Dominadas (certas em duas tentativas seguidas): ' + CARDS.filter(function (c) { return status(c.id) === 'ok'; }).length + ' de ' + CARDS.length);
+    L.push('Ainda sem tentativa: ' + CARDS.filter(function (c) { return status(c.id) === 'new'; }).length);
+    var bad = CARDS.filter(function (c) { return status(c.id) === 'err'; });
+    L.push(bad.length ? 'Falharam na última tentativa:' : 'Nenhum card falhou na última tentativa.');
+    bad.forEach(function (c) {
+      var s = store.stats[c.id] || {};
+      L.push('- [' + KLAB[c.kind] + '] ' + c.en + ' | ouvido: "' + (s.last || '') + '"');
+    });
+    return L.join('\n');
+  }
+
+  $('bListen').addEventListener('click', function () {
+    var c = current(); if (!c) return;
+    speak(c.kind === 'q' ? c.q : c.en);
+  });
+  $('bListenAns').addEventListener('click', function () { var c = current(); if (c) speak(c.en); });
+  $('bHide').addEventListener('click', function () {
+    var c = current(); if (!c) return;
+    store.hide[c.kind] = !store.hide[c.kind]; save();
+    shown = !hideOn(c.kind);
+    renderTarget(c);
+    $('bListenAns').hidden = !(c.kind === 'q' && shown);
+    $('bHide').setAttribute('aria-pressed', hideOn(c.kind) ? 'true' : 'false');
+  });
+  $('bSlow').setAttribute('aria-pressed', store.slow ? 'true' : 'false');
+  $('bSlow').addEventListener('click', function () {
+    store.slow = !store.slow; save();
+    $('bSlow').setAttribute('aria-pressed', store.slow ? 'true' : 'false');
+  });
+  $('bAuto').setAttribute('aria-pressed', store.auto ? 'true' : 'false');
+  $('bAuto').addEventListener('click', function () {
+    store.auto = !store.auto; save();
+    $('bAuto').setAttribute('aria-pressed', store.auto ? 'true' : 'false');
+  });
+  try { if (location.protocol === 'file:') $('fileTip').hidden = false; } catch (e) {}
+  $('bMic').addEventListener('click', startMic);
+  $('checkForm').addEventListener('submit', function (e) { e.preventDefault(); check($('heard').value); });
+  $('bPrev').addEventListener('click', function () { move(-1); });
+  $('bNext').addEventListener('click', function () { move(1); });
+  $('bRand').addEventListener('click', function () {
+    var v = visible();
+    if (v.length < 2) return;
+    var n;
+    do { n = v[Math.floor(Math.random() * v.length)]; } while (n.id === curId);
+    curId = n.id; renderCard(); renderList();
+  });
+  document.addEventListener('keydown', function (e) {
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight') move(1);
+    if (e.key === 'ArrowLeft') move(-1);
+  });
+
+  $('bSum').addEventListener('click', function () {
+    var text = summary();
+    var box = $('sumBox');
+    box.textContent = '';
+    var ta = document.createElement('textarea');
+    ta.readOnly = true; ta.value = text;
+    box.appendChild(ta);
+    function fallback() { ta.focus(); ta.select(); $('sumMsg').textContent = 'Selecione e copie o texto acima.'; }
+    try {
+      navigator.clipboard.writeText(text).then(function () { $('sumMsg').textContent = 'Resumo copiado.'; }, fallback);
+    } catch (e) { fallback(); }
+  });
+  var resetArmed = false;
+  $('bReset').addEventListener('click', function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      $('bReset').textContent = 'Confirmar: apagar tudo';
+      $('sumMsg').textContent = 'Isso apaga os dias de prática e o histórico de acertos deste navegador.';
+      return;
+    }
+    resetArmed = false;
+    store.stats = {}; store.days = [];
+    save();
+    $('bReset').textContent = 'Zerar histórico';
+    $('sumBox').textContent = '';
+    $('sumMsg').textContent = 'Histórico zerado.';
+    renderAll();
+  });
+
+  renderAll();
+})();
+</script>
+
+</body>
+</html>

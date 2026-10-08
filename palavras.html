@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+<title>Cards de Pronúncia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* Layout: one working card on top (word, listen, speak, test-runner style result), word list and add form below. */
+:root {
+  --bg: #EEF2F5;
+  --surface: #FFFFFF;
+  --ink: #13202A;
+  --muted: #566874;
+  --line: #D3DCE3;
+  --accent: #0E6A8C;
+  --accent-ink: #FFFFFF;
+  --pass: #17794A;
+  --pass-bg: #E2F3EA;
+  --fail: #B1352A;
+  --fail-bg: #FBE7E4;
+  --rec: #B1352A;
+  --f-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --f-body: 'Public Sans', 'Segoe UI', system-ui, sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0D1418;
+    --surface: #152028;
+    --ink: #E6EEF2;
+    --muted: #8FA2AE;
+    --line: #26363F;
+    --accent: #5CC0E0;
+    --accent-ink: #06222C;
+    --pass: #5BD39A;
+    --pass-bg: #123326;
+    --fail: #FF8F80;
+    --fail-bg: #3A1B18;
+    --rec: #D9493B;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0D1418;
+  --surface: #152028;
+  --ink: #E6EEF2;
+  --muted: #8FA2AE;
+  --line: #26363F;
+  --accent: #5CC0E0;
+  --accent-ink: #06222C;
+  --pass: #5BD39A;
+  --pass-bg: #123326;
+  --fail: #FF8F80;
+  --fail-bg: #3A1B18;
+  --rec: #D9493B;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 16px;
+  line-height: 1.5;
+  padding-block: 24px 56px;
+  padding-inline: 16px;
+}
+.wrap { max-width: 760px; margin: 0 auto; display: grid; gap: 22px; }
+.wrap > * { min-width: 0; }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 8px 16px; }
+h1 { font-family: var(--f-display); font-weight: 800; font-size: 1.7rem; line-height: 1.1; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.sub { color: var(--muted); margin: 6px 0 0; max-width: 58ch; }
+.prog { font-family: var(--f-mono); font-size: 0.82rem; color: var(--muted); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  font: inherit; font-size: 0.88rem; padding: 6px 13px; border-radius: 999px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;
+}
+.chip[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 24px; display: grid; gap: 16px; }
+.card > * { min-width: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-size: 0.8rem; color: var(--muted); }
+.tagpill { text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; font-size: 0.72rem; padding: 3px 8px; border-radius: 6px; background: var(--bg); color: var(--ink); }
+.st { display: inline-flex; align-items: center; gap: 6px; }
+.dot { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: inline-block; flex: none; }
+.st-ok .dot { background: var(--pass); }
+.st-err .dot { background: var(--fail); }
+.st-mid .dot { background: var(--accent); }
+.word { font-family: var(--f-display); font-weight: 800; font-size: clamp(2.6rem, 11vw, 4.6rem); line-height: 1.02; letter-spacing: -0.02em; margin: 0; overflow-wrap: anywhere; }
+.base { font-family: var(--f-mono); color: var(--muted); font-size: 0.92rem; }
+.pt { font-size: 1.1rem; }
+.say { display: grid; gap: 2px; padding: 12px 14px; background: var(--bg); border-radius: 10px; }
+.lab { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.09em; color: var(--muted); font-weight: 600; }
+.say .val { font-family: var(--f-mono); font-size: 1.15rem; font-weight: 600; letter-spacing: 0.02em; overflow-wrap: anywhere; }
+.note { color: var(--muted); font-size: 0.93rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.btn {
+  font: inherit; font-weight: 600; padding: 10px 16px; border-radius: 10px;
+  border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer;
+  display: inline-flex; gap: 8px; align-items: center;
+}
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.btn.rec { background: var(--rec); border-color: var(--rec); color: #fff; }
+.btn.small { padding: 6px 12px; font-size: 0.88rem; font-weight: 500; }
+.btn svg { width: 18px; height: 18px; flex: none; }
+.micnote { color: var(--muted); font-size: 0.9rem; min-height: 1.4em; }
+.micnote.bad { color: var(--fail); }
+.field { display: grid; gap: 6px; }
+.row { display: flex; flex-wrap: wrap; gap: 10px; }
+input[type="text"] {
+  font: inherit; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--ink); flex: 1 1 200px; min-width: 0;
+}
+.help { color: var(--muted); font-size: 0.85rem; }
+
+.res { border-radius: 12px; padding: 14px 16px; display: grid; gap: 8px; font-family: var(--f-mono); font-size: 0.95rem; border: 1px solid; }
+.res.pass { background: var(--pass-bg); border-color: var(--pass); }
+.res.fail { background: var(--fail-bg); border-color: var(--fail); }
+.verdict { font-weight: 600; letter-spacing: 0.08em; }
+.res.pass .verdict { color: var(--pass); }
+.res.fail .verdict { color: var(--fail); }
+.line { display: grid; grid-template-columns: 5.5rem 1fr; gap: 8px; align-items: baseline; }
+.line .k { color: var(--muted); }
+.line .v { overflow-wrap: anywhere; }
+.m { background: var(--fail-bg); color: var(--fail); text-decoration: underline wavy; text-underline-offset: 3px; border-radius: 3px; }
+.res.fail .m { background: transparent; }
+.hint { font-family: var(--f-body); font-size: 0.95rem; margin: 0; }
+.nav { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.nav .pos { font-family: var(--f-mono); font-size: 0.85rem; color: var(--muted); }
+
+h2 { font-family: var(--f-display); font-size: 1.15rem; font-weight: 800; margin: 0 0 10px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.cell {
+  font: inherit; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line);
+  background: var(--surface); color: var(--ink); cursor: pointer; display: flex; align-items: center; gap: 8px; min-width: 0;
+}
+.cell span.t { overflow-wrap: anywhere; }
+.cell[aria-current="true"] { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; display: grid; gap: 12px; }
+.empty { color: var(--muted); }
+textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-family: var(--f-mono); font-size: 0.85rem; }
+.foot { color: var(--muted); font-size: 0.85rem; }
+@media (max-width: 480px) { .card { padding: 18px; } .line { grid-template-columns: 4.6rem 1fr; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <h1>Cards de pronúncia</h1>
+      <p class="sub">Ouça a palavra, fale no microfone e veja se o computador entendeu o que você disse.</p>
+    </div>
+    <div class="prog" id="prog" aria-live="polite"></div>
+  </header>
+
+  <div class="chips" id="filters" role="group" aria-label="Filtrar palavras"></div>
+
+  <section class="card" aria-label="Card de pronúncia">
+    <div class="meta">
+      <span class="tagpill" id="ctag"></span>
+      <span id="caula"></span>
+      <span class="st" id="cstatus"><span class="dot"></span><span id="cstatust"></span></span>
+    </div>
+    <h2 class="word" id="cword" style="margin:0"></h2>
+    <div class="base" id="cbase"></div>
+    <div class="pt" id="cpt"></div>
+    <div class="say"><span class="lab">Como se diz</span><span class="val" id="csay"></span></div>
+    <div class="note" id="cnote"></div>
+
+    <div class="actions">
+      <button type="button" class="btn" id="bListen">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+        Ouvir
+      </button>
+      <button type="button" class="chip" id="bSlow" aria-pressed="false">Devagar</button>
+      <button type="button" class="chip" id="bAuto" aria-pressed="false">Avançar ao acertar</button>
+      <button type="button" class="btn primary" id="bMic">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>
+        <span id="bMicT">Ligar microfone</span>
+      </button>
+    </div>
+    <div class="micnote" id="micnote" aria-live="polite"></div>
+    <div class="help" id="fileTip" hidden>Dica: o Chrome pede permissão toda vez que o arquivo é aberto direto do disco. Para a permissão ficar salva, abra por localhost: na pasta do arquivo rode <code>python -m http.server 8000</code> e acesse <code>http://localhost:8000/cards-pronuncia.html</code>.</div>
+
+    <form class="field" id="checkForm" autocomplete="off">
+      <label class="lab" for="heard">Texto ouvido</label>
+      <div class="row">
+        <input type="text" id="heard" placeholder="O microfone preenche aqui. Você também pode ditar ou digitar." autocapitalize="off" autocorrect="off" spellcheck="false">
+        <button type="submit" class="btn">Conferir</button>
+      </div>
+      <span class="help">Sem microfone nesta página? Dite neste campo com o ditado do teclado (Windows: tecla Windows + H) e pare de falar: a conferência é automática depois de ~1,5 s (o botão Conferir continua funcionando).</span>
+    </form>
+
+    <div id="res" aria-live="polite"></div>
+
+    <div class="nav">
+      <button type="button" class="btn small" id="bPrev">Anterior</button>
+      <span class="pos" id="pos"></span>
+      <button type="button" class="btn small" id="bRand">Aleatória</button>
+      <button type="button" class="btn small" id="bNext">Próxima</button>
+    </div>
+    <div id="rmWrap"></div>
+  </section>
+
+  <section>
+    <h2>Palavras</h2>
+    <div class="grid" id="list"></div>
+    <p class="empty" id="listEmpty" hidden>Nenhuma palavra neste filtro ainda.</p>
+  </section>
+
+  <section class="panel">
+    <h2 style="margin:0">Adicionar palavra</h2>
+    <form class="field" id="addForm" autocomplete="off">
+      <div class="row">
+        <input type="text" id="nwWord" placeholder="Palavra ou frase curta (inglês)" aria-label="Palavra em inglês" autocapitalize="off" spellcheck="false">
+        <input type="text" id="nwPt" placeholder="Tradução (opcional)" aria-label="Tradução">
+        <input type="text" id="nwSay" placeholder="Como se diz (opcional)" aria-label="Como se diz">
+        <button type="submit" class="btn">Adicionar</button>
+      </div>
+      <span class="help" id="addMsg" aria-live="polite">As palavras que você adiciona ficam salvas neste navegador. Para guardar de vez, copie a lista e me mande.</span>
+    </form>
+    <div class="row">
+      <button type="button" class="btn small" id="bCopy">Copiar minhas palavras</button>
+    </div>
+    <div id="copyBox"></div>
+  </section>
+
+  <p class="foot">O reconhecimento de voz escreve o que ouviu, então serve de diagnóstico, igual ao ditado das aulas. Se a transcrição sair estranha, pode ser pronúncia ou microfone: ouça de novo e repita a palavra em um bloco só, sem pausa.</p>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var KEY = 'cards-pronuncia-v1';
+  var TAGS = { reg: 'Regular', irr: 'Irregular', ec: 'EnglishConnect', blk: 'Sons e blocos', my: 'Minha' };
+  var FILTERS = [
+    ['all', 'Todas'], ['irr', 'Irregulares'], ['reg', 'Regulares'], ['ec', 'EnglishConnect'],
+    ['blk', 'Sons e blocos'], ['my', 'Minhas'], ['err', 'Errei']
+  ];
+
+  function mk(tag, w, pt, say, o) {
+    o = o || {};
+    return {
+      id: tag + ':' + w, tag: tag, w: w, pt: pt, say: say,
+      base: o.base || '', ed: o.ed || '', aula: o.aula || 0, note: o.note || '',
+      alt: o.alt || [], conf: o.conf || {}, tts: o.tts || w
+    };
+  }
+  function R(w, base, pt, say, ed, aula, note) { return mk('reg', w, pt, say, { base: base, ed: ed, aula: aula, note: note }); }
+  function I(w, base, pt, say, aula, note, extra) {
+    var o = extra || {}; o.base = base; o.aula = aula; o.note = note || '';
+    return mk('irr', w, pt, say, o);
+  }
+
+  var CARDS = [
+    I('built', 'build', 'construir', 'BILT', 1, 'Não é consertar (isso é fixed).', { conf: { 'will build': 'Saiu "will build". Built é uma palavra só, com T preso no final.', 'bill': 'Saiu "bill". Em built o T final fecha a palavra.' } }),
+    I('did', 'do', 'fazer', 'DÍD', 3, 'What did you do?'),
+    I('found', 'find', 'encontrar', 'FÁUND', 1, ''),
+    I('forgot', 'forget', 'esquecer', 'fâr-GÁT', 1, ''),
+    I('got', 'get', 'receber, conseguir', 'GÁT', 2, ''),
+    I('went', 'go', 'ir', 'UÉNT', 3, 'Nunca goed.'),
+    I('had', 'have', 'ter', 'RÉD', 3, 'O H é só um sopro de ar, sem R forte.'),
+    I('knew', 'know', 'saber, conhecer', 'NÚ', 1, 'O k não se fala.', { alt: ['new'] }),
+    I('made', 'make', 'fazer, criar', 'MÉID', 2, ''),
+    I('read', 'read', 'ler', 'RÉD', 1, 'Escreve igual, só o som muda. O reconhecimento escreve read ou red.', { alt: ['red'], tts: 'red' }),
+    I('ran', 'run', 'rodar, executar', 'RÉN', 2, ''),
+    I('said', 'say', 'dizer', 'SÉD', 3, ''),
+    I('saw', 'see', 'ver', 'SÓ', 3, 'Na Aula 3 saiu I don\'t see (ontem).'),
+    I('sold', 'sell', 'vender', 'SÔULD', 1, 'Na Aula 2 saiu send.', { conf: { 'send': 'Saiu "send". Sold tem o som ôu e fecha com D.', 'sol': 'Faltou o D no final. Sold fecha com D seco.' } }),
+    I('sent', 'send', 'enviar', 'SÉNT', 1, 'T preso: não vira send it.'),
+    I('told', 'tell', 'contar, dizer', 'TÔULD', 2, ''),
+    I('thought', 'think', 'pensar', 'THÓT', 2, ''),
+    I('wrote', 'write', 'escrever', 'RÔUT', 1, '', { alt: ['rote'] }),
+
+    R('answered', 'answer', 'responder', 'ÉN-sârd', '/d/', 2, ''),
+    R('archived', 'archive', 'arquivar', 'ÁR-kaivd', '/d/', 3, ''),
+    R('called', 'call', 'ligar, chamar', 'KÓLD', '/d/', 1, ''),
+    R('changed', 'change', 'mudar', 'TCHÊINDJD', '/d/', 1, ''),
+    R('checked', 'check', 'verificar', 'TCHÉKT', '/t/', 1, ''),
+    R('created', 'create', 'criar', 'kri-ÊI-tid', '/ɪd/', 3, ''),
+    R('fixed', 'fix', 'consertar', 'FIKST', '/t/', 1, 'Na Aula 2 saiu built.'),
+    R('needed', 'need', 'precisar', 'NÍ-did', '/ɪd/', 1, ''),
+    R('opened', 'open', 'abrir', 'ÔU-pend', '/d/', 1, ''),
+    R('passed', 'pass', 'passar (teste)', 'PÉST', '/t/', 1, ''),
+    R('started', 'start', 'começar', 'STÁR-tid', '/ɪd/', 3, ''),
+    R('studied', 'study', 'estudar', 'STÂ-did', '/d/', 2, ''),
+    R('talked', 'talk', 'conversar', 'TÓKT', '/t/', 1, ''),
+    R('tested', 'test', 'testar', 'TÉS-tid', '/ɪd/', 1, ''),
+    R('used', 'use', 'usar', 'IÚZD', '/d/', 3, 'Na Aula 3 saiu I use no passado.'),
+    R('watched', 'watch', 'assistir', 'UÁTCHT', '/t/', 1, ''),
+    R('worked', 'work', 'trabalhar, funcionar', 'UÂRKT', '/t/', 1, 'Sem vogal no final: não é work-ed.'),
+
+    mk('ec', 'email', 'e-mail', 'Í-mêil', { aula: 0, note: 'EnglishConnect 1, Lição 3.' }),
+    mk('ec', 'phone number', 'número de telefone', 'FÔUN NÂM-bâr', { note: 'EnglishConnect 1, Lição 3.' }),
+    mk('ec', 'at', 'arroba (@)', 'ÉT', { note: 'EnglishConnect 1, Lição 3. Em e-mail: name at gmail dot com.' }),
+    mk('ec', 'dot', 'ponto (.)', 'DÁT', { note: 'EnglishConnect 1, Lição 3.' }),
+    mk('ec', 'their', 'deles, delas', 'DHÉR', { alt: ['there', "they're"], note: 'EnglishConnect 1, Lição 3. Soa igual a there; o reconhecimento pode escrever qualquer um.' }),
+    mk('ec', 'birthday', 'aniversário', 'BÂRTH-dêi', { note: 'EnglishConnect 1, Lição 3. TH com a ponta da língua entre os dentes.' }),
+    mk('ec', 'May thirtieth', '30 de maio', 'MÊI THÂR-ti-ith', { note: 'EnglishConnect 1, Lição 3. Data com número ordinal.' }),
+
+    mk('blk', 'the', 'o, a', 'THÂ', { note: 'Língua entre os dentes, sem D. Na Aula 2 saiu debug.', conf: { 'debug': 'Saiu "debug". O TH do the é a língua entre os dentes, sem D.' } }),
+    mk('blk', 'task', 'tarefa', 'TÉSK', { note: 'Não confundir com test: em task a boca abre mais.', conf: { 'test': 'Saiu "test". Em task o som é A, com a boca mais aberta que em test.' } }),
+    mk('blk', 'test', 'teste', 'TÉST', { note: 'Compare com task.', conf: { 'task': 'Saiu "task". Em test o som é E, com a boca menos aberta.' } }),
+    mk('blk', 'tested it', 'testei', 'TÉS-tid-it', { note: 'Emende o -ed com o it.' }),
+    mk('blk', 'sent it', 'enviei', 'SÉN-tit', { note: 'T preso e emendado no it.' }),
+    mk('blk', 'sold it', 'vendi', 'SÔUL-dit', { note: 'D emendado no it.' }),
+    mk('blk', 'worked on', 'trabalhei em', 'UÂRK-ton', { note: 'Fale em um bloco só.' }),
+    mk('blk', 'an email', 'um e-mail', 'ÊN Í-mêil', { note: 'Um e-mail leva an, não a.' }),
+    mk('blk', 'the bug', 'o bug', 'THÂ BÂG', { note: 'The bug é um bug que já existe.' }),
+    mk('blk', 'on Amazon', 'na Amazon', 'ON É-mâ-zon', { note: 'Na Amazon: on, sem the.' })
+  ];
+
+  var store = { custom: [], stats: {}, filter: 'all', slow: false, auto: false };
+  try {
+    var raw = localStorage.getItem(KEY);
+    if (raw) {
+      var o = JSON.parse(raw);
+      if (o && typeof o === 'object') {
+        if (Array.isArray(o.custom)) store.custom = o.custom.filter(function (x) { return x && typeof x.w === 'string'; });
+        if (o.stats && typeof o.stats === 'object') store.stats = o.stats;
+        if (typeof o.filter === 'string') store.filter = o.filter;
+        store.slow = !!o.slow;
+        store.auto = !!o.auto;
+      }
+    }
+  } catch (e) {}
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(store)); } catch (e) {} }
+
+  function all() {
+    return CARDS.concat(store.custom.map(function (c) { return mk('my', c.w, c.pt || '', c.say || ''); }));
+  }
+  function status(id) {
+    var h = (store.stats[id] || {}).h || [];
+    if (!h.length) return 'new';
+    return h[h.length - 1] === 0 ? 'err' : 'ok';
+  }
+  var STLAB = { 'new': 'Novo', err: 'Errou', mid: 'Treinando', ok: 'Acertou' };
+
+  function visible() {
+    var f = store.filter;
+    return all().filter(function (c) {
+      if (f === 'all') return true;
+      if (f === 'err') return status(c.id) === 'err';
+      return c.tag === f;
+    });
+  }
+
+  var $ = function (id) { return document.getElementById(id); };
+  var curId = null;
+  var listening = false, rec = null, micBlocked = false;
+
+  function current() {
+    var v = visible();
+    var c = v.filter(function (x) { return x.id === curId; })[0];
+    if (!c && v.length) { c = v[0]; curId = c.id; }
+    return c || null;
+  }
+
+  function norm(s) {
+    return String(s).toLowerCase().replace(/[’‘]/g, "'").replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
+  }
+
+  function lcsMask(a, b) {
+    var n = a.length, m = b.length, d = [], i, j;
+    for (i = 0; i <= n; i++) { d[i] = []; for (j = 0; j <= m; j++) d[i][j] = 0; }
+    for (i = n - 1; i >= 0; i--) for (j = m - 1; j >= 0; j--)
+      d[i][j] = a[i] === b[j] ? d[i + 1][j + 1] + 1 : Math.max(d[i + 1][j], d[i][j + 1]);
+    var ma = [], mb = [];
+    for (i = 0; i < n; i++) ma[i] = false;
+    for (j = 0; j < m; j++) mb[j] = false;
+    i = 0; j = 0;
+    while (i < n && j < m) {
+      if (a[i] === b[j]) { ma[i] = true; mb[j] = true; i++; j++; }
+      else if (d[i + 1][j] >= d[i][j + 1]) i++; else j++;
+    }
+    return [ma, mb];
+  }
+
+  function fillTokens(el, tokens, mask, joiner) {
+    el.textContent = '';
+    tokens.forEach(function (t, i) {
+      var s = document.createElement('span');
+      if (!mask[i]) s.className = 'm';
+      s.textContent = t;
+      el.appendChild(s);
+      if (joiner && i < tokens.length - 1) el.appendChild(document.createTextNode(joiner));
+    });
+  }
+
+  function hintFor(c, heard) {
+    if (c.conf && c.conf[heard]) return c.conf[heard];
+    var nb = c.base ? norm(c.base) : '';
+    if (nb && heard === nb) return 'Saiu "' + nb + '", a forma do dicionário. O passado é "' + c.w + '".';
+    var nh = heard.replace(/ /g, ''), nt = norm(c.w).replace(/ /g, '');
+    if (nh.length > nt.length && nh.indexOf(nt) === 0 && nh.slice(nt.length) === 'it')
+      return 'O T final virou "it". Trave o T atrás dos dentes, sem soltar ar, e emende na próxima palavra.';
+    if (c.ed && c.ed !== '/ɪd/' && nb && heard.indexOf(nb) === 0 && heard !== norm(c.w))
+      return 'Sobrou som no final. O -ed de ' + c.w + ' é só um ' + (c.ed === '/t/' ? 'T' : 'D') + ' seco, sem vogal.';
+    return 'Pode ser pronúncia ou microfone. Ouça de novo e repita em um bloco só, sem pausa. Se você disse certo, o microfone errou e não conta.';
+  }
+
+  function record(id, ok) {
+    var s = store.stats[id] || { h: [] };
+    s.h.push(ok ? 1 : 0);
+    if (s.h.length > 6) s.h = s.h.slice(-6);
+    store.stats[id] = s;
+    save();
+  }
+
+  function check(rawText) {
+    clearTimeout(typeTimer);
+    var c = current();
+    if (!c) return;
+    var heard = norm(rawText);
+    var res = $('res');
+    res.textContent = '';
+    if (!heard) { setNote('Fale ou digite algo antes de conferir.', true); return; }
+    var targets = [c.w].concat(c.alt).map(norm);
+    var ok = targets.indexOf(heard) > -1;
+    record(c.id, ok);
+
+    var box = document.createElement('div');
+    box.className = 'res ' + (ok ? 'pass' : 'fail');
+    var v = document.createElement('div');
+    v.className = 'verdict';
+    v.textContent = ok ? 'PASSOU' : 'FALHOU';
+    box.appendChild(v);
+
+    var exp = norm(c.w);
+    var l1 = document.createElement('div'); l1.className = 'line';
+    var k1 = document.createElement('span'); k1.className = 'k'; k1.textContent = 'esperado';
+    var v1 = document.createElement('span'); v1.className = 'v';
+    var l2 = document.createElement('div'); l2.className = 'line';
+    var k2 = document.createElement('span'); k2.className = 'k'; k2.textContent = 'ouvido';
+    var v2 = document.createElement('span'); v2.className = 'v';
+
+    var ea = exp.split(' '), ha = heard.split(' ');
+    var chars = ea.length === 1 && ha.length === 1;
+    var A = chars ? exp.split('') : ea, B = chars ? heard.split('') : ha;
+    var masks = ok ? [A.map(function () { return true; }), B.map(function () { return true; })] : lcsMask(A, B);
+    if (ok && heard !== exp) masks = [A.map(function () { return true; }), B.map(function () { return true; })];
+    fillTokens(v1, A, masks[0], chars ? '' : ' ');
+    fillTokens(v2, B, masks[1], chars ? '' : ' ');
+    l1.appendChild(k1); l1.appendChild(v1);
+    l2.appendChild(k2); l2.appendChild(v2);
+    box.appendChild(l1); box.appendChild(l2);
+
+    var p = document.createElement('p');
+    p.className = 'hint';
+    if (ok) {
+      p.textContent = heard === exp ? 'Certo. Diga de novo em um bloco só para fixar.' : 'Aceito: "' + heard + '" soa igual a "' + exp + '".';
+    } else {
+      p.textContent = hintFor(c, heard);
+    }
+    box.appendChild(p);
+    res.appendChild(box);
+    renderMeta(c);
+    renderList();
+    renderProg();
+    $('heard').value = '';
+    if (listening) { setNote(LIVE); } else { try { $('heard').focus({ preventScroll: true }); } catch (e0) {} }
+    if (ok && store.auto) {
+      var okId = c.id;
+      setTimeout(function () { if (curId === okId) move(1); }, 1500);
+    }
+  }
+
+  function setNote(msg, bad) {
+    var n = $('micnote');
+    n.textContent = msg || '';
+    n.className = 'micnote' + (bad ? ' bad' : '');
+  }
+
+  function speak(text) {
+    if (!('speechSynthesis' in window)) { setNote('Este navegador não tem voz para o botão Ouvir.', true); return; }
+    try {
+      window.speechSynthesis.cancel();
+      var u = new SpeechSynthesisUtterance(text);
+      u.lang = 'en-US';
+      u.rate = store.slow ? 0.6 : 0.9;
+      var vs = window.speechSynthesis.getVoices();
+      var v = vs.filter(function (x) { return x.lang === 'en-US'; })[0] || vs.filter(function (x) { return /^en/i.test(x.lang); })[0];
+      if (v) u.voice = v;
+      window.speechSynthesis.speak(u);
+    } catch (e) { setNote('Não consegui tocar o áudio neste navegador.', true); }
+  }
+
+  var typeTimer = null;
+  var LIVE = 'Microfone ligado. Diga a palavra do card; cada frase é conferida sozinha.';
+  var wantMic = false;
+
+  function setMicUi(on) {
+    listening = on;
+    var b = $('bMic');
+    b.className = 'btn ' + (on ? 'rec' : 'primary');
+    $('bMicT').textContent = on ? 'Microfone ligado (toque para desligar)' : 'Ligar microfone';
+  }
+
+  function stopMic() {
+    wantMic = false;
+    if (rec) { try { rec.stop(); } catch (e) {} }
+    setMicUi(false);
+    setNote('');
+  }
+
+  function openRec() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    rec = new SR();
+    rec.lang = 'en-US';
+    rec.interimResults = true;
+    rec.maxAlternatives = 5;
+    rec.continuous = true;
+    rec.onresult = function (e) {
+        for (var i = e.resultIndex; i < e.results.length; i++) {
+          var t = e.results[i][0].transcript;
+          if (e.results[i].isFinal) {
+            var c0 = current();
+            if (c0) {
+              var tg = [c0.w].concat(c0.alt).map(norm);
+              for (var a = 0; a < e.results[i].length; a++) {
+                var alt = e.results[i][a].transcript;
+                if (tg.indexOf(norm(alt)) > -1) { t = alt; break; }
+              }
+            }
+          }
+          $('heard').value = t;
+          if (e.results[i].isFinal) { check(t); }
+        }
+      };
+      rec.onerror = function (e) {
+      var code = e && e.error;
+      if (code === 'not-allowed' || code === 'service-not-allowed') {
+        micBlocked = true; wantMic = false;
+        setNote('O navegador bloqueou o microfone nesta página. Dite no campo abaixo com o ditado do teclado (Windows + H) ou abra a versão local do arquivo.', true);
+      } else if (code === 'audio-capture') {
+        wantMic = false;
+        setNote('Não encontrei um microfone neste computador.', true);
+      } else if (code === 'network') {
+        wantMic = false;
+        setNote('O reconhecimento de voz precisa de internet.', true);
+      } else if (code !== 'aborted' && code !== 'no-speech') {
+        wantMic = false;
+        setNote('O reconhecimento de voz falhou (' + code + '). Tente ligar de novo.', true);
+      }
+    };
+    rec.onend = function () {
+      if (wantMic) { setTimeout(function () { if (!wantMic) return; try { openRec(); } catch (err) { stopMic(); } }, 300); return; }
+      setMicUi(false);
+    };
+    rec.start();
+  }
+
+  function startMic() {
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      setNote('Este navegador não tem reconhecimento de voz. Use o Chrome ou o Edge, ou dite no campo abaixo com o ditado do teclado.', true);
+      return;
+    }
+    if (listening) { stopMic(); return; }
+    wantMic = true; micBlocked = false;
+    try {
+      openRec();
+      setMicUi(true);
+      setNote(LIVE);
+    } catch (err) {
+      wantMic = false;
+      setMicUi(false);
+      setNote('Não consegui ligar o microfone. Dite no campo abaixo com o ditado do teclado.', true);
+    }
+  }
+
+  function renderMeta(c) {
+    $('ctag').textContent = TAGS[c.tag];
+    $('caula').textContent = c.aula ? 'Aula ' + c.aula : '';
+    var s = status(c.id);
+    $('cstatus').className = 'st st-' + s;
+    $('cstatust').textContent = STLAB[s];
+  }
+
+  function renderCard() {
+    var c = current();
+    var res = $('res');
+    res.textContent = '';
+    setNote(listening ? LIVE : '');
+    $('heard').value = '';
+    var rm = $('rmWrap');
+    rm.textContent = '';
+    if (!c) {
+      $('ctag').textContent = '';
+      $('caula').textContent = '';
+      $('cstatust').textContent = '';
+      $('cword').textContent = '—';
+      $('cbase').textContent = '';
+      $('cpt').textContent = 'Nenhuma palavra neste filtro. Escolha outro filtro acima.';
+      $('csay').textContent = '—';
+      $('cnote').textContent = '';
+      $('pos').textContent = '0 de 0';
+      return;
+    }
+    renderMeta(c);
+    $('cword').textContent = c.w;
+    $('cbase').textContent = c.base ? c.base + ' → ' + c.w : '';
+    $('cpt').textContent = c.pt;
+    $('csay').textContent = c.say || '—';
+    var note = c.note;
+    if (c.ed) note = (note ? note + ' ' : '') + 'Som do -ed: ' + c.ed + '.';
+    $('cnote').textContent = note;
+    var v = visible();
+    var idx = v.map(function (x) { return x.id; }).indexOf(c.id);
+    $('pos').textContent = (idx + 1) + ' de ' + v.length;
+    if (c.tag === 'my') {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'btn small'; b.textContent = 'Remover esta palavra';
+      var armed = false;
+      b.addEventListener('click', function () {
+        if (!armed) { armed = true; b.textContent = 'Confirmar remoção'; return; }
+        store.custom = store.custom.filter(function (x) { return 'my:' + x.w !== c.id; });
+        delete store.stats[c.id];
+        save();
+        curId = null;
+        renderAll();
+      });
+      rm.appendChild(b);
+    }
+  }
+
+  function renderFilters() {
+    var f = $('filters');
+    f.textContent = '';
+    FILTERS.forEach(function (x) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'chip'; b.textContent = x[1];
+      b.setAttribute('aria-pressed', store.filter === x[0] ? 'true' : 'false');
+      b.addEventListener('click', function () {
+        store.filter = x[0]; save(); curId = null; renderAll();
+      });
+      f.appendChild(b);
+    });
+  }
+
+  function renderList() {
+    var l = $('list');
+    l.textContent = '';
+    var v = visible();
+    $('listEmpty').hidden = v.length > 0;
+    v.forEach(function (c) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.className = 'cell';
+      if (c.id === curId) b.setAttribute('aria-current', 'true');
+      var s = status(c.id);
+      var d = document.createElement('span');
+      d.className = 'st st-' + s;
+      var dot = document.createElement('span'); dot.className = 'dot';
+      d.appendChild(dot);
+      d.title = STLAB[s];
+      var t = document.createElement('span'); t.className = 't'; t.textContent = c.w;
+      b.appendChild(d); b.appendChild(t);
+      b.addEventListener('click', function () {
+        curId = c.id; renderCard(); renderList();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      l.appendChild(b);
+    });
+  }
+
+  function renderProg() {
+    var a = all();
+    var n = a.filter(function (c) { return status(c.id) === 'ok'; }).length;
+    $('prog').textContent = 'Acertadas ' + n + ' de ' + a.length;
+  }
+
+  $('heard').addEventListener('input', function () {
+    clearTimeout(typeTimer);
+    if (!$('heard').value.trim()) return;
+    typeTimer = setTimeout(function () { check($('heard').value); }, 1600);
+  });
+  function renderAll() { renderFilters(); renderCard(); renderList(); renderProg(); }
+
+  function move(delta) {
+    var v = visible();
+    if (!v.length) return;
+    var idx = v.map(function (x) { return x.id; }).indexOf(curId);
+    idx = (idx + delta + v.length) % v.length;
+    curId = v[idx].id;
+    renderCard(); renderList();
+  }
+
+  $('bListen').addEventListener('click', function () { var c = current(); if (c) speak(c.tts); });
+  $('bSlow').setAttribute('aria-pressed', store.slow ? 'true' : 'false');
+  $('bSlow').addEventListener('click', function () {
+    store.slow = !store.slow; save();
+    $('bSlow').setAttribute('aria-pressed', store.slow ? 'true' : 'false');
+  });
+  $('bAuto').setAttribute('aria-pressed', store.auto ? 'true' : 'false');
+  $('bAuto').addEventListener('click', function () {
+    store.auto = !store.auto; save();
+    $('bAuto').setAttribute('aria-pressed', store.auto ? 'true' : 'false');
+  });
+  try { if (location.protocol === 'file:') $('fileTip').hidden = false; } catch (e) {}
+  $('bMic').addEventListener('click', startMic);
+  $('checkForm').addEventListener('submit', function (e) { e.preventDefault(); check($('heard').value); });
+  $('bPrev').addEventListener('click', function () { move(-1); });
+  $('bNext').addEventListener('click', function () { move(1); });
+  $('bRand').addEventListener('click', function () {
+    var v = visible();
+    if (v.length < 2) return;
+    var n;
+    do { n = v[Math.floor(Math.random() * v.length)]; } while (n.id === curId);
+    curId = n.id; renderCard(); renderList();
+  });
+  document.addEventListener('keydown', function (e) {
+    var tag = (document.activeElement && document.activeElement.tagName) || '';
+    if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+    if (e.key === 'ArrowRight') move(1);
+    if (e.key === 'ArrowLeft') move(-1);
+  });
+
+  $('addForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var w = $('nwWord').value.trim();
+    var msg = $('addMsg');
+    if (!w) { msg.textContent = 'Escreva a palavra em inglês.'; return; }
+    var id = 'my:' + w;
+    if (all().some(function (c) { return c.id === id || (c.tag !== 'my' && norm(c.w) === norm(w)); })) {
+      msg.textContent = 'Essa palavra já está na lista.'; return;
+    }
+    store.custom.push({ w: w, pt: $('nwPt').value.trim(), say: $('nwSay').value.trim() });
+    save();
+    $('nwWord').value = ''; $('nwPt').value = ''; $('nwSay').value = '';
+    msg.textContent = 'Adicionada: ' + w + '.';
+    store.filter = 'all'; save();
+    curId = id;
+    renderAll();
+  });
+
+  $('bCopy').addEventListener('click', function () {
+    var text = store.custom.map(function (c) { return c.w + ' | ' + (c.pt || '') + ' | ' + (c.say || ''); }).join('\n');
+    var box = $('copyBox');
+    box.textContent = '';
+    if (!text) { $('addMsg').textContent = 'Você ainda não adicionou palavras.'; return; }
+    function fallback() {
+      var ta = document.createElement('textarea');
+      ta.readOnly = true; ta.value = text;
+      box.appendChild(ta); ta.focus(); ta.select();
+      $('addMsg').textContent = 'Selecione e copie o texto abaixo.';
+    }
+    try {
+      navigator.clipboard.writeText(text).then(function () { $('addMsg').textContent = 'Lista copiada.'; }, fallback);
+    } catch (e) { fallback(); }
+  });
+
+  renderAll();
+})();
+</script>
+
+</body>
+</html>
