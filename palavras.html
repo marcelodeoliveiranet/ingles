@@ -234,6 +234,15 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
     <div id="copyBox"></div>
   </section>
 
+  <section class="panel">
+    <h2 style="margin:0">Recomeçar do zero</h2>
+    <p class="help" style="margin:0">Apaga as bolinhas e o histórico de acertos deste navegador. As palavras que você adicionou em "Minhas" continuam.</p>
+    <div class="row">
+      <button type="button" class="btn small" id="bReset">Zerar histórico</button>
+    </div>
+    <span class="help" id="resetMsg" aria-live="polite"></span>
+  </section>
+
   <p class="foot">O reconhecimento de voz escreve o que ouviu, então serve de diagnóstico, igual ao ditado das aulas. Se a transcrição sair estranha, pode ser pronúncia ou microfone: ouça de novo e repita a palavra em um bloco só, sem pausa.</p>
 </div>
 
@@ -757,6 +766,22 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
     try {
       navigator.clipboard.writeText(text).then(function () { $('addMsg').textContent = 'Lista copiada.'; }, fallback);
     } catch (e) { fallback(); }
+  });
+
+  var resetArmed = false;
+  $('bReset').addEventListener('click', function () {
+    if (!resetArmed) {
+      resetArmed = true;
+      $('bReset').textContent = 'Confirmar: apagar histórico';
+      $('resetMsg').textContent = 'Isso zera as bolinhas e os acertos de todas as palavras. Toque de novo para confirmar.';
+      return;
+    }
+    resetArmed = false;
+    store.stats = {};
+    save();
+    $('bReset').textContent = 'Zerar histórico';
+    $('resetMsg').textContent = 'Histórico zerado.';
+    renderAll();
   });
 
   renderAll();
