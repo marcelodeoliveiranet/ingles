@@ -1,12 +1,4 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="../favicon.svg" type="image/svg+xml">
-</head>
-<body>
-<title>Frases da Aula 1</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="../favicon.svg" type="image/svg+xml"></head><body><title>Frases da Aula 1</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -159,9 +151,19 @@ textarea { width: 100%; min-height: 12em; padding: 10px; border-radius: 10px; bo
 .foot { color: var(--muted); font-size: 0.85rem; }
 @media (max-width: 480px) { .card { padding: 18px; } .line { grid-template-columns: 4.6rem 1fr; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.sbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sbar a { color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600; margin-right: 4px; }
+.sbar input[type="search"] { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); flex: 1 1 180px; min-width: 0; }
+.sbar button { font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
 </style>
 
 <div class="wrap">
+  <form class="sbar" action="../index.html" method="get" role="search">
+    <a href="../index.html">Início</a>
+    <input type="search" name="q" placeholder="Buscar palavra ou frase (ex.: build)" aria-label="Buscar em todo o site" autocomplete="off">
+    <button type="submit">Buscar</button>
+  </form>
   <header class="head">
     <div>
       <h1>Frases da Aula 1</h1>
@@ -949,9 +951,16 @@ textarea { width: 100%; min-height: 12em; padding: 10px; border-radius: 10px; bo
     renderAll();
   });
 
+  /* link direto para um card: #c=<id> */
+  try {
+    if (location.hash.indexOf('#c=') === 0) {
+      var hid = decodeURIComponent(location.hash.slice(3));
+      var hc = CARDS.filter(function (x) { return x.id === hid; })[0];
+      if (hc) { store.tab = hc.kind; store.group = 'all'; curId = hc.id; }
+    }
+  } catch (e) {}
+
   renderAll();
 })();
 </script>
-
-</body>
-</html>
+</body></html>

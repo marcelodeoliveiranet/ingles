@@ -144,9 +144,19 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
 .foot { color: var(--muted); font-size: 0.85rem; }
 @media (max-width: 480px) { .card { padding: 18px; } .line { grid-template-columns: 4.6rem 1fr; } }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+.sbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.sbar a { color: var(--accent); text-decoration: none; font-size: 0.9rem; font-weight: 600; margin-right: 4px; }
+.sbar input[type="search"] { font: inherit; padding: 8px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); flex: 1 1 180px; min-width: 0; }
+.sbar button { font: inherit; font-weight: 600; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink); cursor: pointer; }
 </style>
 
 <div class="wrap">
+  <form class="sbar" action="index.html" method="get" role="search">
+    <a href="index.html">Início</a>
+    <input type="search" name="q" placeholder="Buscar palavra ou frase (ex.: build)" aria-label="Buscar em todo o site" autocomplete="off">
+    <button type="submit">Buscar</button>
+  </form>
   <header class="head">
     <div>
       <h1>Cards de pronúncia</h1>
@@ -792,6 +802,15 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
     $('resetMsg').textContent = 'Histórico zerado.';
     renderAll();
   });
+
+  /* link direto para um card: #c=<id> */
+  try {
+    if (location.hash.indexOf('#c=') === 0) {
+      var hid = decodeURIComponent(location.hash.slice(3));
+      var hc = CARDS.filter(function (x) { return x.id === hid; })[0];
+      if (hc) { store.filter = 'all'; curId = hc.id; }
+    }
+  } catch (e) {}
 
   renderAll();
 })();

@@ -21,6 +21,21 @@ a.item { display: block; padding: 16px 18px; margin-bottom: 10px; background: va
 a.item:hover, a.item:focus-visible { border-color: var(--accent); outline: none; }
 a.item strong { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-size: 1.15rem; }
 a.item span { display: block; color: var(--muted); font-size: 0.92rem; }
+
+.search { display: flex; gap: 8px; margin: 0 0 20px; }
+.search input { font: inherit; font-size: 1.05rem; flex: 1; min-width: 0; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); }
+.search input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.search button { font: inherit; font-weight: 600; padding: 12px 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; }
+#results h2 .n { font-weight: 400; }
+a.res { display: block; padding: 12px 16px; margin-bottom: 8px; background: var(--card); border: 1px solid var(--line); border-radius: 12px; color: var(--ink); text-decoration: none; }
+a.res:hover, a.res:focus-visible { border-color: var(--accent); outline: none; }
+a.res .main { font-family: 'Bricolage Grotesque', system-ui, sans-serif; font-weight: 600; font-size: 1.1rem; overflow-wrap: anywhere; }
+a.res .sub2 { color: var(--muted); font-size: 0.92rem; overflow-wrap: anywhere; }
+a.res .say { font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; color: var(--muted); overflow-wrap: anywhere; }
+a.res .tag { font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+mark { background: color-mix(in srgb, var(--accent) 28%, transparent); color: inherit; border-radius: 3px; padding: 0 1px; }
+button.more { font: inherit; padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); color: var(--ink); cursor: pointer; margin-bottom: 10px; }
+#empty { color: var(--muted); }
 </style>
 </head>
 <body>
@@ -28,6 +43,13 @@ a.item span { display: block; color: var(--muted); font-size: 0.92rem; }
   <h1>Inglês</h1>
   <p class="sub">Pratique falando. Use o Chrome ou o Edge para o microfone funcionar.</p>
 
+  <form class="search" id="sform" role="search">
+    <input type="search" id="q" placeholder="Buscar palavra ou frase (ex.: build, quebrar, on the site)" aria-label="Buscar em todo o site" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button type="button" id="qclear" hidden>Limpar</button>
+  </form>
+  <div id="results" aria-live="polite" hidden></div>
+
+  <div id="menu">
   <h2>Palavras</h2>
   <a class="item" href="palavras.html"><strong>Cards de palavras</strong><span>Verbos, EnglishConnect e sons. Ouça, fale e confira a pronúncia.</span></a>
 
@@ -37,6 +59,160 @@ a.item span { display: block; color: var(--muted); font-size: 0.92rem; }
   <a class="item" href="aulas/aula-03-frases.html"><strong>Frases da Aula 3</strong><span>Frases, perguntas e entrevista, com "Como se diz".</span></a>
   <a class="item" href="aulas/aula-04-frases.html"><strong>Frases da Aula 4</strong><span>a/an, the, in × on e nomes sem artigo, com a lógica de cada frase.</span></a>
   <!-- Aulas novas entram aqui: copie o bloco acima e troque o nome e o link. -->
+  </div>
 </main>
+<script src="busca.js"></script>
+<script>
+(function () {
+  'use strict';
+  var DATA = window.BUSCA || [], FORMAS = window.FORMAS || {};
+  var $ = function (id) { return document.getElementById(id); };
+  var TIPOS = [
+    ['irr', 'Verbos irregulares'], ['reg', 'Verbos regulares'], ['blk', 'Blocos e sons'], ['ec', 'EnglishConnect'],
+    ['fr', 'Frases'], ['ent', 'Entrevista'], ['fix', 'Corrija o erro']
+  ];
+  var SHOW = 8;
+  var REV = {};
+  Object.keys(FORMAS).forEach(function (b) { FORMAS[b].forEach(function (f) { (REV[f] = REV[f] || []).push(b); }); });
+
+  function strip(s) { return Array.from(String(s)).map(function (c) { var d = c.normalize('NFD'); return d.charAt(0); }).join('').toLowerCase(); }
+  function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+  function words(s) { return strip(s).split(/[^a-z0-9']+/).filter(Boolean); }
+
+  function variants(w) {
+    var v = [w];
+    (FORMAS[w] || []).forEach(function (x) { v.push(x); });
+    (REV[w] || []).forEach(function (b) { v.push(b); (FORMAS[b] || []).forEach(function (x) { v.push(x); }); });
+    return v.filter(function (x, i) { return v.indexOf(x) === i; });
+  }
+  function tokMatch(tok, vs) {
+    for (var i = 0; i < vs.length; i++) {
+      var v = vs[i];
+      if (v.length <= 2 ? tok === v : tok.indexOf(v) === 0) return true;
+      if (v.length >= 6 && tok.length >= 6 && tok.slice(0, 5) === v.slice(0, 5)) return true;
+    }
+    return false;
+  }
+  var blobs = DATA.map(function (it) {
+    return words([it.en, it.pt, it.base || '', it.why || ''].join(' '));
+  });
+
+  function search(q) {
+    var qs = words(q);
+    if (!qs.length) return [];
+    var vv = qs.map(variants);
+    var phrase = strip(q).replace(/\s+/g, ' ').trim();
+    var res = [];
+    DATA.forEach(function (it, i) {
+      var toks = blobs[i];
+      var ok = vv.every(function (vs) { return toks.some(function (t) { return tokMatch(t, vs); }); });
+      if (!ok) return;
+      var score = 0;
+      var enW = words(it.en);
+      if (qs.length === 1 && enW.length === 1 && vv[0].indexOf(enW[0]) > -1) score += 5;
+      if (it.base && vv[0].indexOf(strip(it.base)) > -1 && qs.length === 1) score += 3;
+      if (strip(it.en).indexOf(phrase) > -1) score += 2;
+      if (words(it.en).some(function (t) { return vv.some(function (vs) { return tokMatch(t, vs); }); })) score += 1;
+      res.push({ it: it, score: score, i: i });
+    });
+    res.sort(function (a, b) { return b.score - a.score || b.it.a - a.it.a || a.i - b.i; });
+    return { list: res, vv: vv };
+  }
+
+  function mark(el, text, vv) {
+    var flat = [];
+    vv.forEach(function (vs) { vs.forEach(function (v) { if (flat.indexOf(v) < 0) flat.push(v); }); });
+    vv.forEach(function (vs) { vs.forEach(function (v) { if (v.length >= 6 && flat.indexOf(v.slice(0, 5)) < 0) flat.push(v.slice(0, 5)); }); });
+    flat.sort(function (a, b) { return b.length - a.length; });
+    var norm = strip(text);
+    var re = new RegExp('(^|[^a-z0-9\'])(' + flat.map(esc).join('|') + ')([a-z0-9\']*)', 'g');
+    var last = 0, m;
+    while ((m = re.exec(norm))) {
+      var start = m.index + m[1].length, end = start + m[2].length + m[3].length;
+      if (m[2].length <= 2 && m[3].length) { continue; }
+      if (start > last) el.appendChild(document.createTextNode(text.slice(last, start)));
+      var mk = document.createElement('mark');
+      mk.textContent = text.slice(start, end);
+      el.appendChild(mk);
+      last = end;
+    }
+    if (last < text.length) el.appendChild(document.createTextNode(text.slice(last)));
+  }
+
+  function line(cls, text, vv) {
+    var d = document.createElement('div');
+    d.className = cls;
+    if (vv) mark(d, text, vv); else d.textContent = text;
+    return d;
+  }
+  function card(r, vv) {
+    var it = r.it;
+    var a = document.createElement('a');
+    a.className = 'res'; a.href = it.h;
+    var tag = (it.a ? 'Aula ' + it.a : 'EnglishConnect') + (it.t === 'ent' ? ' · entrevista' : '');
+    a.appendChild(line('tag', tag));
+    a.appendChild(line('main', it.en, vv));
+    var sub = it.pt;
+    if (it.base && it.base !== it.en) sub = it.pt + ' · base: ' + it.base;
+    if (sub) a.appendChild(line('sub2', sub, vv));
+    if (it.say) a.appendChild(line('say', it.say));
+    return a;
+  }
+
+  function render(q) {
+    var box = $('results'), menu = $('menu');
+    box.textContent = '';
+    if (!strip(q).trim()) { box.hidden = true; menu.hidden = false; $('qclear').hidden = true; return; }
+    $('qclear').hidden = false;
+    menu.hidden = true; box.hidden = false;
+    var out = search(q);
+    if (!out.list || !out.list.length) {
+      var e = document.createElement('p'); e.id = 'empty';
+      e.textContent = 'Nada encontrado para "' + q.trim() + '". Tente outra palavra, em inglês ou em português.';
+      box.appendChild(e); return;
+    }
+    var n = out.list.length;
+    var tot = document.createElement('p'); tot.id = 'empty';
+    tot.textContent = n + (n === 1 ? ' resultado' : ' resultados');
+    box.appendChild(tot);
+    TIPOS.forEach(function (tp) {
+      var rows = out.list.filter(function (r) { return r.it.t === tp[0]; });
+      if (!rows.length) return;
+      var h = document.createElement('h2');
+      h.appendChild(document.createTextNode(tp[1] + ' '));
+      var sp = document.createElement('span'); sp.className = 'n'; sp.textContent = '(' + rows.length + ')';
+      h.appendChild(sp); box.appendChild(h);
+      var wrap = document.createElement('div'); box.appendChild(wrap);
+      function paint(upto) {
+        wrap.textContent = '';
+        rows.slice(0, upto).forEach(function (r) { wrap.appendChild(card(r, out.vv)); });
+        if (rows.length > upto) {
+          var b = document.createElement('button'); b.type = 'button'; b.className = 'more';
+          b.textContent = 'Mostrar mais ' + (rows.length - upto);
+          b.addEventListener('click', function () { paint(rows.length); });
+          wrap.appendChild(b);
+        }
+      }
+      paint(SHOW);
+    });
+  }
+
+  var timer = null;
+  function setUrl(q) {
+    try { history.replaceState(null, '', q ? '?q=' + encodeURIComponent(q) : location.pathname); } catch (e) {}
+  }
+  $('q').addEventListener('input', function () {
+    clearTimeout(timer);
+    var q = $('q').value;
+    timer = setTimeout(function () { render(q); setUrl(q.trim()); }, 120);
+  });
+  $('sform').addEventListener('submit', function (e) { e.preventDefault(); render($('q').value); setUrl($('q').value.trim()); });
+  $('qclear').addEventListener('click', function () { $('q').value = ''; render(''); setUrl(''); $('q').focus(); });
+  try {
+    var m = /[?&]q=([^&]*)/.exec(location.search);
+    if (m) { var q0 = decodeURIComponent(m[1].replace(/\+/g, ' ')); $('q').value = q0; render(q0); }
+  } catch (e) {}
+})();
+</script>
 </body>
 </html>
