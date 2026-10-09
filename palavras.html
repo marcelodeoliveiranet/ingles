@@ -1,12 +1,4 @@
-<!doctype html>
-<html lang="pt-BR">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<link rel="icon" href="favicon.svg" type="image/svg+xml">
-</head>
-<body>
-<title>Cards de Pronúncia</title>
+<!doctype html><html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="favicon.svg" type="image/svg+xml"></head><body><title>Cards de Pronúncia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
@@ -291,6 +283,11 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
     I('told', 'tell', 'contar, dizer', 'TÔULD', 2, ''),
     I('thought', 'think', 'pensar', 'THÓT', 2, ''),
     I('wrote', 'write', 'escrever', 'RÔUT', 1, '', { alt: ['rote'] }),
+    I('broke', 'break', 'quebrar', 'BRÔUK', 4, 'The build broke.'),
+    I('bought', 'buy', 'comprar', 'BÓT', 4, 'I bought a domain.'),
+    I('gave', 'give', 'dar', 'GUÊIV', 4, 'I gave a task to the client.'),
+    I('kept', 'keep', 'manter, guardar', 'KÉPT', 4, 'T preso no final. Não vira keep it.'),
+    I('took', 'take', 'levar, pegar', 'TÚK', 4, 'T com sopro no começo: I took a test.'),
 
     R('answered', 'answer', 'responder', 'ÉN-sârd', '/d/', 2, ''),
     R('archived', 'archive', 'arquivar', 'ÁR-kaivd', '/d/', 3, ''),
@@ -298,7 +295,7 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
     R('changed', 'change', 'mudar', 'TCHÊINDJD', '/d/', 1, ''),
     R('checked', 'check', 'verificar', 'TCHÉKT', '/t/', 1, ''),
     R('created', 'create', 'criar', 'kri-ÊI-tid', '/ɪd/', 3, ''),
-    R('fixed', 'fix', 'consertar', 'FIKST', '/t/', 1, 'Na Aula 2 saiu built.'),
+    R('fixed', 'fix', 'consertar', 'FIKST', '/t/', 1, 'Na Aula 2 saiu built. Na Aula 4 saiu correct.'),
     R('needed', 'need', 'precisar', 'NÍ-did', '/ɪd/', 1, ''),
     R('opened', 'open', 'abrir', 'ÔU-pend', '/d/', 1, ''),
     R('passed', 'pass', 'passar (teste)', 'PÉST', '/t/', 1, ''),
@@ -319,7 +316,7 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
     mk('ec', 'May thirtieth', '30 de maio', 'MÊI THÂR-ti-ith', { note: 'EnglishConnect 1, Lição 3. Data com número ordinal.' }),
 
     mk('blk', 'the', 'o, a', 'THÂ', { note: 'Língua entre os dentes, sem D. Na Aula 2 saiu debug.', conf: { 'debug': 'Saiu "debug". O TH do the é a língua entre os dentes, sem D.' } }),
-    mk('blk', 'task', 'tarefa', 'TÉSK', { note: 'Não confundir com test: em task a boca abre mais.', conf: { 'test': 'Saiu "test". Em task o som é A, com a boca mais aberta que em test.' } }),
+    mk('blk', 'task', 'tarefa', 'TÉSK', { note: 'Não confundir com test: em task a boca abre mais. T inicial com sopro de ar (na Aula 4 saiu desk).', conf: { 'test': 'Saiu "test". Em task o som é A, com a boca mais aberta que em test.', 'desk': 'Saiu "desk". O T do começo precisa de um sopro de ar, como soprar uma vela pequena.' } }),
     mk('blk', 'test', 'teste', 'TÉST', { note: 'Compare com task.', conf: { 'task': 'Saiu "task". Em test o som é E, com a boca menos aberta.' } }),
     mk('blk', 'tested it', 'testei', 'TÉS-tid-it', { note: 'Emende o -ed com o it.' }),
     mk('blk', 'sent it', 'enviei', 'SÉN-tit', { note: 'T preso e emendado no it.' }),
@@ -327,7 +324,18 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
     mk('blk', 'worked on', 'trabalhei em', 'UÂRK-ton', { note: 'Fale em um bloco só.' }),
     mk('blk', 'an email', 'um e-mail', 'ÊN Í-mêil', { note: 'Um e-mail leva an, não a.' }),
     mk('blk', 'the bug', 'o bug', 'THÂ BÂG', { note: 'The bug é um bug que já existe.' }),
-    mk('blk', 'on Amazon', 'na Amazon', 'ON É-mâ-zon', { note: 'Na Amazon: on, sem the.' })
+    mk('blk', 'on Amazon', 'na Amazon', 'ON É-mâ-zon', { note: 'Na Amazon: on, sem the.' }),
+    mk('blk', 'in the log', 'no log', 'IN thâ LÓG', { aula: 4, note: 'in = dá para abrir e olhar dentro. Coisa comum leva the.' }),
+    mk('blk', 'in the code', 'no código', 'IN thâ KÔUD', { aula: 4, note: 'in = olhar dentro do código.' }),
+    mk('blk', 'in the file', 'no arquivo', 'IN thâ FAIL', { aula: 4, note: 'in = olhar dentro do arquivo.' }),
+    mk('blk', 'in Chrome', 'no Chrome', 'IN KRÔUM', { aula: 4, note: 'Programa que você abre: in. Chrome é nome, sem the.' }),
+    mk('blk', 'on the site', 'no site', 'ON thâ SAIT', { aula: 4, note: 'Site é plataforma: on. Coisa comum leva the.' }),
+    mk('blk', 'on the task', 'na tarefa', 'ON thâ TÉSK', { aula: 4, note: 'A tarefa é onde o trabalho acontece: on.' }),
+    mk('blk', 'on the project', 'no projeto', 'ON thâ PRÁ-djékt', { aula: 4, note: 'O projeto é onde o trabalho acontece: on.' }),
+    mk('blk', 'on GitHub', 'no GitHub', 'ON GUIT-hâb', { aula: 4, note: 'Plataforma: on. GitHub é nome, sem the.' }),
+    mk('blk', 'a bug', 'um bug', 'Â BÂG', { aula: 4, note: 'Som de B (consoante): a, não an.' }),
+    mk('blk', 'an error', 'um erro', 'ÂN É-râr', { aula: 4, note: 'Som de vogal: an.' }),
+    mk('blk', 'an account', 'uma conta', 'ÂN â-KÁUNT', { aula: 4, note: 'Som de vogal: an.' })
   ];
 
   var store = { custom: [], stats: {}, filter: 'all', slow: false, auto: false };
@@ -788,6 +796,4 @@ textarea { font: var(--f-mono); width: 100%; min-height: 6em; padding: 10px; bor
   renderAll();
 })();
 </script>
-
-</body>
-</html>
+</body></html>
